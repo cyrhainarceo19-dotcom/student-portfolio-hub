@@ -4,18 +4,100 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Students | Student Portfolio Hub</title>
-    <link rel="stylesheet" href="style.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            background: #f5f7fb;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+        }
+
+        nav.scrolled {
+            padding: 0.7rem 0;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #2d2d2d;
+            font-weight: 500;
+        }
+
+        .user-badge {
+            background: #f0eef7;
+            padding: 0.4rem 1rem;
+            border-radius: 30px;
+            color: #5a4fcf;
+        }
+
+        .btn-logout {
+            background: #fee2e2;
+            border: none;
+            padding: 0.4rem 1.2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            color: #dc2626;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #2d2d2d;
+            transition: 0.3s;
+        }
+
         .students-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 6rem 2rem 2rem;
         }
-        
-        .search-container {
-            margin-bottom: 2rem;
-        }
-        
+
         .search-input {
             width: 100%;
             max-width: 500px;
@@ -24,20 +106,19 @@
             border-radius: 50px;
             font-size: 1rem;
             outline: none;
-            transition: all 0.3s;
+            margin-bottom: 2rem;
         }
-        
+
         .search-input:focus {
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.2);
         }
-        
+
         .students-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1.5rem;
         }
-        
+
         .student-card {
             background: white;
             border-radius: 20px;
@@ -47,12 +128,12 @@
             transition: transform 0.3s, box-shadow 0.3s;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
         }
-        
+
         .student-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 15px 35px rgba(0,0,0,0.15);
         }
-        
+
         .student-avatar {
             width: 80px;
             height: 80px;
@@ -65,9 +146,8 @@
             font-weight: bold;
             color: white;
             margin: 0 auto 1rem;
-            object-fit: cover;
         }
-        
+
         .profile-pic-preview {
             width: 80px;
             height: 80px;
@@ -77,39 +157,27 @@
             border: 3px solid white;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        
+
         .action-buttons {
             display: flex;
             gap: 0.5rem;
             justify-content: center;
-            margin-top: 0.8rem;
+            margin-top: 1rem;
         }
-        
+
         .action-btn {
-            display: inline-block;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 500;
+            padding: 0.4rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
             text-decoration: none;
-            cursor: pointer;
-            transition: all 0.2s;
+            font-weight: 500;
         }
-        
-        .view-profile-btn {
+
+        .view-btn {
             background: #e0e7ff;
             color: #4f46e5;
         }
-        
-        .message-btn-sm {
-            background: #dcfce7;
-            color: #16a34a;
-        }
-        
-        .action-btn:hover {
-            transform: translateY(-2px);
-        }
-        
+
         .loading-spinner {
             display: inline-block;
             width: 20px;
@@ -118,19 +186,31 @@
             border-radius: 50%;
             border-top-color: #667eea;
             animation: spin 0.8s linear infinite;
-            margin-right: 8px;
         }
-        
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        
+
         @media (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                left: -100%;
+                top: 70px;
+                flex-direction: column;
+                background: white;
+                width: 100%;
+                transition: 0.3s;
+                padding: 2rem;
+            }
+            .nav-links.active {
+                left: 0;
+            }
+            .hamburger {
+                display: flex;
+            }
             .students-container {
                 padding: 5rem 1rem 1rem;
-            }
-            .students-grid {
-                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -143,28 +223,17 @@
                 <li><a href="dashboard.html">🏠 My Profile</a></li>
                 <li><a href="students.html">👥 All Students</a></li>
                 <li><a href="editor.html">✏️ Edit Portfolio</a></li>
-                <li><a href="messaging.html">💬 Messages</a></li>
                 <li><span class="user-badge" id="userNameDisplay"></span></li>
                 <li><button id="logoutBtn" class="btn-logout">🚪 Logout</button></li>
             </ul>
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+            <div class="hamburger"><span></span><span></span><span></span></div>
         </div>
     </nav>
     
     <div class="students-container">
-        <div class="search-container">
-            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search by name or username...">
-        </div>
-        
-        <h3 style="margin-bottom: 1rem;">👥 All Students</h3>
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search by name or username...">
         <div id="studentsGrid" class="students-grid">
-            <div style="text-align:center; padding:2rem; background:white; border-radius:20px;">
-                <span class="loading-spinner"></span> Loading students...
-            </div>
+            <div style="text-align:center; padding:2rem;"><span class="loading-spinner"></span> Loading students...</div>
         </div>
     </div>
     
@@ -172,9 +241,7 @@
         const SHEETBEST_API_URL = "https://api.sheetbest.com/sheets/54f68e59-9aa4-4e67-b267-1a4241a9a9df";
         
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        if (!currentUser) {
-            window.location.href = 'index.html';
-        }
+        if (!currentUser) window.location.href = 'index.html';
         
         document.getElementById('userNameDisplay').textContent = currentUser.fullname;
         
@@ -194,8 +261,6 @@
         
         function renderStudents(students) {
             const grid = document.getElementById('studentsGrid');
-            
-            // Filter out current user
             const otherStudents = students.filter(s => s.username !== currentUser.username);
             
             if (otherStudents.length === 0) {
@@ -207,19 +272,15 @@
             otherStudents.forEach(student => {
                 const card = document.createElement('div');
                 card.className = 'student-card';
-                
                 const avatarHtml = student.profilePicture && student.profilePicture.startsWith('data:') 
-                    ? `<img src="${student.profilePicture}" class="profile-pic-preview" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">`
-                    : `<div class="student-avatar">${escapeHtml(student.avatar || student.fullname.charAt(0).toUpperCase())}</div>`;
-                
+                    ? `<img src="${student.profilePicture}" class="profile-pic-preview">`
+                    : `<div class="student-avatar">${escapeHtml((student.fullname || 'U').charAt(0).toUpperCase())}</div>`;
                 card.innerHTML = `
                     ${avatarHtml}
                     <h3>${escapeHtml(student.fullname)}</h3>
                     <p style="color:#666;">@${escapeHtml(student.username)}</p>
-                    <p style="color:#888; font-size:0.8rem;">📧 ${escapeHtml(student.email)}</p>
                     <div class="action-buttons">
-                        <a href="profile.html?user=${encodeURIComponent(student.username)}" class="action-btn view-profile-btn">👤 View Profile</a>
-                        <a href="messaging.html?user=${encodeURIComponent(student.username)}" class="action-btn message-btn-sm">💬 Message</a>
+                        <a href="dashboard.html?user=${encodeURIComponent(student.username)}" class="action-btn view-btn">👤 View Profile</a>
                     </div>
                 `;
                 grid.appendChild(card);
@@ -230,8 +291,7 @@
             const term = searchTerm.toLowerCase();
             const filtered = allStudents.filter(student => 
                 student.username !== currentUser.username &&
-                (student.fullname.toLowerCase().includes(term) || 
-                 student.username.toLowerCase().includes(term))
+                (student.fullname.toLowerCase().includes(term) || student.username.toLowerCase().includes(term))
             );
             renderStudents(filtered);
         }
@@ -241,44 +301,13 @@
             renderStudents(allStudents);
         }
         
-        // Search event
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            filterStudents(e.target.value);
-        });
+        document.getElementById('searchInput').addEventListener('input', (e) => filterStudents(e.target.value));
+        document.getElementById('logoutBtn').addEventListener('click', () => { localStorage.removeItem('currentUser'); window.location.href = 'index.html'; });
         
-        // Logout handler
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('currentUser');
-            window.location.href = 'index.html';
-        });
-        
-        // Navbar scroll effect
-        window.addEventListener('scroll', function() {
-            const nav = document.querySelector('nav');
-            if (window.scrollY > 50) {
-                nav.classList.add('scrolled');
-            } else {
-                nav.classList.remove('scrolled');
-            }
-        });
-        
-        // Mobile menu toggle
+        window.addEventListener('scroll', () => document.querySelector('nav').classList.toggle('scrolled', window.scrollY > 50));
         const hamburger = document.querySelector('.hamburger');
         const navLinks = document.querySelector('.nav-links');
-        if (hamburger) {
-            hamburger.addEventListener('click', () => {
-                hamburger.classList.toggle('active');
-                navLinks.classList.toggle('active');
-            });
-        }
-        
-        // Close mobile menu when clicking a link
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', () => {
-                if (hamburger) hamburger.classList.remove('active');
-                if (navLinks) navLinks.classList.remove('active');
-            });
-        });
+        if (hamburger) hamburger.addEventListener('click', () => { hamburger.classList.toggle('active'); navLinks.classList.toggle('active'); });
         
         loadStudents();
     </script>
