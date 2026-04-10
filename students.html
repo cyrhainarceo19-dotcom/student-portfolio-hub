@@ -123,4 +123,27 @@
                 s.username !== currentUser.username &&
                 (s.fullname.toLowerCase().includes(term) || s.username.toLowerCase().includes(term))
             );
-            renderStudents(filtered
+            renderStudents(filtered);
+        }
+        
+        document.getElementById('searchInput').addEventListener('input', (e) => filterStudents(e.target.value));
+        document.getElementById('logoutBtn').onclick = () => {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        };
+        
+        window.addEventListener('scroll', () => document.querySelector('nav').classList.toggle('scrolled', window.scrollY > 50));
+        
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        if (hamburger) {
+            hamburger.onclick = () => {
+                hamburger.classList.toggle('active');
+                navLinks.classList.toggle('active');
+            };
+        }
+        
+        loadStudents();
+    </script>
+</body>
+</html>
