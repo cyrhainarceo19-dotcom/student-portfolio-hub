@@ -67,6 +67,14 @@
         .conv-info { flex: 1; min-width: 0; }
         .conv-name { font-weight: 600; margin-bottom: 0.2rem; }
         .conv-last-msg { font-size: 0.75rem; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .conv-unread {
+            background: #667eea;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
         
         .chat-area {
             flex: 1;
@@ -96,6 +104,7 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
+            font-size: 1.2rem;
         }
         
         .chat-messages {
@@ -150,6 +159,7 @@
         }
         
         .chat-input:focus { border-color: #667eea; }
+        
         .send-btn {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
@@ -158,7 +168,10 @@
             border-radius: 25px;
             cursor: pointer;
             font-weight: 600;
+            transition: transform 0.2s;
         }
+        
+        .send-btn:hover { transform: translateY(-2px); }
         
         .empty-chat {
             display: flex;
@@ -168,6 +181,7 @@
             height: 100%;
             color: #888;
             text-align: center;
+            padding: 2rem;
         }
         
         .emoji-picker-container { position: relative; }
@@ -178,7 +192,10 @@
             padding: 0.8rem 1rem;
             cursor: pointer;
             font-size: 1.2rem;
+            transition: background 0.2s;
         }
+        .emoji-btn:hover { background: #e0e0e0; }
+        
         .emoji-picker {
             position: absolute;
             bottom: 60px;
@@ -192,6 +209,7 @@
             gap: 0.5rem;
             z-index: 100;
             max-width: 360px;
+            border: 1px solid #e2e8f0;
         }
         .emoji-picker.active { display: grid; }
         .emoji-option { font-size: 1.3rem; cursor: pointer; padding: 0.3rem; text-align: center; border-radius: 8px; }
@@ -208,7 +226,7 @@
 <body>
     <nav id="navbar">
         <div class="nav-container">
-            <div class="logo">💬 Messages</div>
+            <div class="logo">💬 Private Messages</div>
             <ul class="nav-links">
                 <li><a href="dashboard.html">🏠 Home</a></li>
                 <li><a href="editor.html">✏️ Edit Portfolio</a></li>
@@ -226,22 +244,23 @@
     
     <div class="messaging-container">
         <div class="conversations-sidebar">
-            <div class="sidebar-header"><h3>💬 Conversations</h3></div>
+            <div class="sidebar-header"><h3>💬 Private Conversations</h3></div>
             <div class="conversations-list" id="conversationsList"><div style="text-align:center; padding:2rem;">📱 Loading...</div></div>
         </div>
         
         <div class="chat-area">
             <div class="chat-header"><div class="chat-avatar" id="chatAvatar">?</div><div><h3 id="chatUserName">Select a conversation</h3></div></div>
-            <div class="chat-messages" id="chatMessages"><div class="empty-chat"><p>👈 Select a conversation</p></div></div>
+            <div class="chat-messages" id="chatMessages"><div class="empty-chat"><p>👈 Select a conversation</p><p style="font-size:0.8rem;">Your private messages are secure and only visible to you and the recipient.</p></div></div>
             <div class="chat-input-area" id="chatInputArea" style="display: none;">
                 <div class="emoji-picker-container"><button class="emoji-btn" id="emojiBtn">😊</button><div class="emoji-picker" id="emojiPicker"></div></div>
-                <input type="text" id="messageInput" class="chat-input" placeholder="💬 Type your message...">
+                <input type="text" id="messageInput" class="chat-input" placeholder="💬 Type your private message...">
                 <button id="sendBtn" class="send-btn">📤 Send</button>
             </div>
         </div>
     </div>
     
     <script>
+        // ==================== API CONFIGURATION ====================
         const SHEETBEST_STUDENTS_URL = "https://api.sheetbest.com/sheets/54f68e59-9aa4-4e67-b267-1a4241a9a9df";
         const MESSAGES_API_URL = "https://api.sheetbest.com/sheets/032cac6c-f303-4712-ac3c-ed72f963b983";
         
@@ -249,105 +268,351 @@
         if (!currentUser) window.location.href = 'index.html';
         document.getElementById('userNameDisplay').textContent = currentUser.fullname;
         
-        let allStudents = [], conversations = [], currentChatUser = null;
+        let allStudents = [];
+        let conversations = [];
+        let currentChatUser = null;
+        let refreshInterval = null;
+        
         const urlParams = new URLSearchParams(window.location.search);
         const directMessageUser = urlParams.get('user');
         
-        async function loadMessagesFromAPI(user1, user2) {
+        // ==================== PRIVATE MESSAGES FUNCTIONS ====================
+        
+        // Get messages ONLY between two specific users
+        async function getPrivateMessages(user1, user2) {
             try {
-                const [r1, r2] = await Promise.all([fetch(`${MESSAGES_API_URL}?fromUser=${user1}&toUser=${user2}`), fetch(`${MESSAGES_API_URL}?fromUser=${user2}&toUser=${user1}`)]);
-                let msgs = [...await r1.json(), ...await r2.json()];
-                return msgs.filter((v,i,a)=>a.findIndex(t=>t.id===v.id)===i).sort((a,b)=>new Date(a.timestamp)-new Date(b.timestamp));
-            } catch(e) { return []; }
-        }
-        
-        async function sendMessageToAPI(fromUser, toUser, message) {
-            try {
-                const res = await fetch(MESSAGES_API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: Date.now().toString(), fromUser, toUser, message, timestamp: new Date().toISOString(), read: false }) });
-                return res.ok;
-            } catch(e) { return false; }
-        }
-        
-        async function markMessagesAsRead(fromUser, toUser) {
-            const res = await fetch(`${MESSAGES_API_URL}?fromUser=${fromUser}&toUser=${toUser}&read=false`);
-            const unread = await res.json();
-            for (const msg of unread) await fetch(`${MESSAGES_API_URL}/${msg.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...msg, read: true }) });
-        }
-        
-        async function getAllStudents() { const res = await fetch(SHEETBEST_STUDENTS_URL); return res.json(); }
-        
-        async function buildConversations() {
-            const students = await getAllStudents();
-            allStudents = students;
-            const [sent, received] = await Promise.all([fetch(`${MESSAGES_API_URL}?fromUser=${currentUser.username}`), fetch(`${MESSAGES_API_URL}?toUser=${currentUser.username}`)]);
-            const allMsgs = [...await sent.json(), ...await received.json()];
-            const uniqueUsers = [...new Set(allMsgs.map(m => m.fromUser === currentUser.username ? m.toUser : m.fromUser))];
-            const convs = [];
-            for (const uname of uniqueUsers) {
-                const student = students.find(s => s.username === uname);
-                if (student) {
-                    const msgs = await loadMessagesFromAPI(currentUser.username, uname);
-                    const last = msgs[msgs.length-1];
-                    convs.push({ username: uname, fullname: student.fullname, avatar: student.avatar || student.fullname.charAt(0).toUpperCase(), lastMessage: last?.message || 'No messages', lastTime: last?.timestamp, unread: msgs.filter(m => m.toUser === currentUser.username && !m.read).length });
-                }
+                // Fetch messages where (fromUser=user1 AND toUser=user2) OR (fromUser=user2 AND toUser=user1)
+                const response = await fetch(MESSAGES_API_URL);
+                const allMessages = await response.json();
+                
+                // Filter messages that are between these two users only
+                const privateMessages = allMessages.filter(msg => 
+                    (msg.fromUser === user1 && msg.toUser === user2) ||
+                    (msg.fromUser === user2 && msg.toUser === user1)
+                );
+                
+                // Sort by timestamp
+                return privateMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+            } catch (error) {
+                console.error('Error loading private messages:', error);
+                return [];
             }
-            return convs.sort((a,b)=>new Date(b.lastTime)-new Date(a.lastTime));
         }
+        
+        // Send a private message
+        async function sendPrivateMessage(fromUser, toUser, message) {
+            try {
+                const newMessage = {
+                    id: Date.now().toString(),
+                    fromUser: fromUser,
+                    toUser: toUser,
+                    message: message,
+                    timestamp: new Date().toISOString(),
+                    read: false
+                };
+                
+                const response = await fetch(MESSAGES_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newMessage)
+                });
+                
+                return response.ok;
+            } catch (error) {
+                console.error('Error sending private message:', error);
+                return false;
+            }
+        }
+        
+        // Mark messages as read (only for current user)
+        async function markPrivateMessagesAsRead(fromUser, toUser) {
+            try {
+                const response = await fetch(MESSAGES_API_URL);
+                const allMessages = await response.json();
+                
+                const unreadMessages = allMessages.filter(msg => 
+                    msg.fromUser === fromUser && 
+                    msg.toUser === toUser && 
+                    msg.read === false
+                );
+                
+                for (const msg of unreadMessages) {
+                    await fetch(`${MESSAGES_API_URL}/${msg.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ...msg, read: true })
+                    });
+                }
+            } catch (error) {
+                console.error('Error marking messages as read:', error);
+            }
+        }
+        
+        // Get all conversations for current user (only involving current user)
+        async function getUserConversations() {
+            try {
+                const response = await fetch(MESSAGES_API_URL);
+                const allMessages = await response.json();
+                
+                // Get all messages where current user is either sender or receiver
+                const userMessages = allMessages.filter(msg => 
+                    msg.fromUser === currentUser.username || 
+                    msg.toUser === currentUser.username
+                );
+                
+                // Extract unique other users
+                const otherUsers = new Set();
+                userMessages.forEach(msg => {
+                    if (msg.fromUser === currentUser.username) {
+                        otherUsers.add(msg.toUser);
+                    } else {
+                        otherUsers.add(msg.fromUser);
+                    }
+                });
+                
+                // Build conversation objects
+                const convs = [];
+                for (const otherUsername of otherUsers) {
+                    const student = allStudents.find(s => s.username === otherUsername);
+                    if (student) {
+                        const privateMsgs = await getPrivateMessages(currentUser.username, otherUsername);
+                        const lastMsg = privateMsgs[privateMsgs.length - 1];
+                        const unreadCount = privateMsgs.filter(m => 
+                            m.toUser === currentUser.username && !m.read
+                        ).length;
+                        
+                        convs.push({
+                            username: otherUsername,
+                            fullname: student.fullname,
+                            avatar: student.avatar || student.fullname.charAt(0).toUpperCase(),
+                            lastMessage: lastMsg ? lastMsg.message : 'No messages yet',
+                            lastTime: lastMsg ? lastMsg.timestamp : '',
+                            unread: unreadCount
+                        });
+                    }
+                }
+                
+                // Sort by most recent
+                return convs.sort((a, b) => {
+                    if (!a.lastTime) return 1;
+                    if (!b.lastTime) return -1;
+                    return new Date(b.lastTime) - new Date(a.lastTime);
+                });
+                
+            } catch (error) {
+                console.error('Error getting conversations:', error);
+                return [];
+            }
+        }
+        
+        // ==================== RENDER FUNCTIONS ====================
         
         function renderConversations() {
             const container = document.getElementById('conversationsList');
-            if (conversations.length === 0) { container.innerHTML = '<div style="text-align:center; padding:2rem;"><p>💭 No conversations yet</p></div>'; return; }
-            container.innerHTML = conversations.map(c => `<div class="conversation-item" data-username="${c.username}" onclick="selectConversation('${c.username}')"><div class="conv-avatar">${escapeHtml(c.avatar)}</div><div class="conv-info"><div class="conv-name">${escapeHtml(c.fullname)}</div><div class="conv-last-msg">${escapeHtml(c.lastMessage.substring(0,50))}</div></div>${c.unread > 0 ? `<div class="conv-time" style="background:#667eea; color:white; padding:0.2rem 0.5rem; border-radius:20px;">${c.unread}</div>` : ''}</div>`).join('');
+            
+            if (conversations.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align:center; padding:2rem;">
+                        <p>💭 No conversations yet</p>
+                        <p style="font-size:0.8rem; color:#888;">Go to a student's profile and send a private message</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = conversations.map(conv => `
+                <div class="conversation-item" data-username="${conv.username}" onclick="selectConversation('${conv.username}')">
+                    <div class="conv-avatar">${escapeHtml(conv.avatar)}</div>
+                    <div class="conv-info">
+                        <div class="conv-name">${escapeHtml(conv.fullname)}</div>
+                        <div class="conv-last-msg">${escapeHtml(conv.lastMessage.substring(0, 50))}${conv.lastMessage.length > 50 ? '...' : ''}</div>
+                    </div>
+                    ${conv.unread > 0 ? `<div class="conv-unread">${conv.unread}</div>` : ''}
+                </div>
+            `).join('');
         }
         
         async function renderMessages() {
-            const container = document.getElementById('chatMessages');
-            if (!currentChatUser) { container.innerHTML = '<div class="empty-chat"><p>👈 Select a conversation</p></div>'; document.getElementById('chatInputArea').style.display = 'none'; return; }
-            const msgs = await loadMessagesFromAPI(currentUser.username, currentChatUser);
-            const partner = allStudents.find(s => s.username === currentChatUser);
-            if (partner) { document.getElementById('chatUserName').textContent = partner.fullname; document.getElementById('chatAvatar').textContent = partner.avatar || partner.fullname.charAt(0).toUpperCase(); }
-            if (msgs.length === 0) container.innerHTML = '<div class="empty-chat"><p>💬 No messages yet</p><p>Send a message to start!</p></div>';
-            else {
-                container.innerHTML = msgs.map(m => `<div class="message-bubble ${m.fromUser === currentUser.username ? 'message-sent' : 'message-received'}">${escapeHtml(m.message)}<div class="message-time">${new Date(m.timestamp).toLocaleString()}</div></div>`).join('');
-                await markMessagesAsRead(currentChatUser, currentUser.username);
-                container.scrollTop = container.scrollHeight;
+            const messagesContainer = document.getElementById('chatMessages');
+            
+            if (!currentChatUser) {
+                messagesContainer.innerHTML = `
+                    <div class="empty-chat">
+                        <p>👈 Select a conversation from the sidebar</p>
+                        <p style="font-size:0.8rem;">🔒 Your private messages are secure and only visible to you and the recipient.</p>
+                    </div>
+                `;
+                document.getElementById('chatInputArea').style.display = 'none';
+                return;
             }
+            
+            const privateMessages = await getPrivateMessages(currentUser.username, currentChatUser);
+            const chatPartner = allStudents.find(s => s.username === currentChatUser);
+            
+            if (chatPartner) {
+                document.getElementById('chatUserName').textContent = chatPartner.fullname;
+                document.getElementById('chatAvatar').textContent = chatPartner.avatar || chatPartner.fullname.charAt(0).toUpperCase();
+            }
+            
+            if (privateMessages.length === 0) {
+                messagesContainer.innerHTML = `
+                    <div class="empty-chat">
+                        <p>💬 No private messages yet</p>
+                        <p style="font-size:0.8rem;">Send a message to start a private conversation!</p>
+                        <p style="font-size:0.8rem;">🔒 Only you and ${escapeHtml(chatPartner?.fullname || 'the recipient')} can see these messages.</p>
+                    </div>
+                `;
+            } else {
+                messagesContainer.innerHTML = privateMessages.map(msg => `
+                    <div class="message-bubble ${msg.fromUser === currentUser.username ? 'message-sent' : 'message-received'}">
+                        ${escapeHtml(msg.message)}
+                        <div class="message-time">${formatTime(msg.timestamp)}</div>
+                    </div>
+                `).join('');
+                
+                // Mark messages as read (only messages sent TO current user)
+                await markPrivateMessagesAsRead(currentChatUser, currentUser.username);
+                
+                // Scroll to bottom
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+            
             document.getElementById('chatInputArea').style.display = 'flex';
         }
         
-        async function selectConversation(username) { currentChatUser = username; await loadAllData(); renderConversations(); await renderMessages(); document.querySelectorAll('.conversation-item').forEach(i => i.classList.toggle('active', i.dataset.username === username)); }
-        
-        async function sendMessage() {
-            const msg = document.getElementById('messageInput').value.trim();
-            if (!msg || !currentChatUser) return;
-            if (await sendMessageToAPI(currentUser.username, currentChatUser, msg)) { document.getElementById('messageInput').value = ''; await loadAllData(); await renderMessages(); renderConversations(); }
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+            
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins} min ago`;
+            if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+            if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+            return date.toLocaleDateString();
         }
         
-        async function loadAllData() { conversations = await buildConversations(); renderConversations(); }
+        // ==================== CONVERSATION ACTIONS ====================
         
-        function escapeHtml(t) { if(!t) return ''; const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
+        async function selectConversation(username) {
+            currentChatUser = username;
+            await loadAllData();
+            renderConversations();
+            await renderMessages();
+            
+            // Highlight active conversation
+            document.querySelectorAll('.conversation-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.username === username);
+            });
+        }
         
-        // Emoji picker
-        const emojis = ['😀','😃','😄','😁','😅','😂','🤣','😊','😇','🙂','😍','🥰','😘','😎','🤩','🥳','😏','😞','😔','😢','😭','😤','😡','🤯','😳','🥵','🥶','😱','❤️','🧡','💛','💚','💙','💜','👍','👎','👏','🙌','🎉','✨','🔥'];
+        async function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (!message || !currentChatUser) return;
+            
+            const success = await sendPrivateMessage(currentUser.username, currentChatUser, message);
+            
+            if (success) {
+                messageInput.value = '';
+                await loadAllData();
+                await renderMessages();
+                renderConversations();
+            }
+        }
+        
+        // ==================== LOAD DATA ====================
+        
+        async function loadAllData() {
+            // Fetch all students
+            const studentsRes = await fetch(SHEETBEST_STUDENTS_URL);
+            allStudents = await studentsRes.json();
+            
+            // Get conversations for current user only
+            conversations = await getUserConversations();
+            renderConversations();
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // ==================== EMOJI PICKER ====================
+        const emojis = ['😀','😃','😄','😁','😅','😂','🤣','😊','😇','🙂','😍','🥰','😘','😎','🤩','🥳','😏','😞','😔','😢','😭','😤','😡','🤯','😳','🥵','🥶','😱','❤️','🧡','💛','💚','💙','💜','👍','👎','👏','🙌','🎉','✨','🔥','💀','👻','🤖','💩','🎈','⭐','🌟','💫'];
         const picker = document.getElementById('emojiPicker');
         picker.innerHTML = emojis.map(e => `<div class="emoji-option">${e}</div>`).join('');
-        document.getElementById('emojiBtn').addEventListener('click', (e) => { e.stopPropagation(); picker.classList.toggle('active'); });
-        document.querySelectorAll('.emoji-option').forEach(e => e.addEventListener('click', () => { document.getElementById('messageInput').value += e.textContent; picker.classList.remove('active'); }));
+        
+        document.getElementById('emojiBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            picker.classList.toggle('active');
+        });
+        
+        document.querySelectorAll('.emoji-option').forEach(emoji => {
+            emoji.addEventListener('click', () => {
+                document.getElementById('messageInput').value += emoji.textContent;
+                picker.classList.remove('active');
+                document.getElementById('messageInput').focus();
+            });
+        });
+        
         document.addEventListener('click', () => picker.classList.remove('active'));
         
-        document.getElementById('sendBtn').addEventListener('click', sendMessage);
-        document.getElementById('messageInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMessage(); });
-        document.getElementById('logoutBtn').addEventListener('click', () => { localStorage.removeItem('currentUser'); window.location.href = 'index.html'; });
+        // ==================== AUTO REFRESH ====================
+        function startAutoRefresh() {
+            if (refreshInterval) clearInterval(refreshInterval);
+            refreshInterval = setInterval(async () => {
+                if (currentChatUser) {
+                    await renderMessages();
+                }
+                await loadAllData();
+            }, 3000);
+        }
         
+        // ==================== EVENT LISTENERS ====================
+        document.getElementById('sendBtn').addEventListener('click', sendMessage);
+        document.getElementById('messageInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+        
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        });
+        
+        // Make selectConversation available globally
         window.selectConversation = selectConversation;
         
-        // Navbar scroll
-        window.addEventListener('scroll', function() { const nav = document.getElementById('navbar'); if (window.scrollY > 50) nav.classList.add('scrolled'); else nav.classList.remove('scrolled'); });
-        const hamburger = document.querySelector('.hamburger'), navLinks = document.querySelector('.nav-links');
-        if (hamburger) hamburger.addEventListener('click', () => { hamburger.classList.toggle('active'); navLinks.classList.toggle('active'); });
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) nav.classList.add('scrolled');
+            else nav.classList.remove('scrolled');
+        });
         
-        loadAllData().then(() => { if (directMessageUser) selectConversation(directMessageUser); });
-        setInterval(async () => { if (currentChatUser) { await renderMessages(); await loadAllData(); } }, 3000);
+        // Mobile menu
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        if (hamburger) {
+            hamburger.addEventListener('click', () => {
+                hamburger.classList.toggle('active');
+                navLinks.classList.toggle('active');
+            });
+        }
+        
+        // Initialize
+        loadAllData().then(() => {
+            if (directMessageUser) {
+                selectConversation(directMessageUser);
+            }
+        });
+        startAutoRefresh();
     </script>
 </body>
 </html>
