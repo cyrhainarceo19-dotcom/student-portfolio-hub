@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages | Student Portfolio Hub</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .messaging-container {
+            display: flex;
+            gap: 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 6rem 1.5rem 1.5rem;
+            min-height: calc(100vh - 80px);
+        }
+        
+        .conversations-sidebar {
+            width: 320px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .conversations-list {
+            flex: 1;
+            overflow-y: auto;
+            max-height: calc(100vh - 200px);
+        }
+        
+        .conversation-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .conversation-item:hover { background: #f8f9ff; }
+        .conversation-item.active { background: #e0e7ff; }
+        
+        .conv-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .conv-info { flex: 1; min-width: 0; }
+        .conv-name { font-weight: 600; margin-bottom: 0.2rem; }
+        .conv-last-msg { font-size: 0.75rem; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .chat-area {
+            flex: 1;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .chat-avatar {
+            width: 45px;
+            height: 45px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            background: #f8fafc;
+        }
+        
+        .message-bubble {
+            max-width: 70%;
+            padding: 0.7rem 1rem;
+            border-radius: 18px;
+            word-wrap: break-word;
+        }
+        
+        .message-sent {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .message-received {
+            background: white;
+            color: #333;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .message-time { font-size: 0.65rem; opacity: 0.7; margin-top: 0.2rem; text-align: right; }
+        
+        .chat-input-area {
+            padding: 1rem;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 0.5rem;
+            background: white;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 0.8rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            outline: none;
+            font-family: inherit;
+        }
+        
+        .chat-input:focus { border-color: #667eea; }
+        .send-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .empty-chat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #888;
+            text-align: center;
+        }
+        
+        .emoji-picker-container { position: relative; }
+        .emoji-btn {
+            background: #f0f0f0;
+            border: none;
+            border-radius: 25px;
+            padding: 0.8rem 1rem;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        .emoji-picker {
+            position: absolute;
+            bottom: 60px;
+            left: 0;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+            padding: 0.8rem;
+            display: none;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 0.5rem;
+            z-index: 100;
+            max-width: 360px;
+        }
+        .emoji-picker.active { display: grid; }
+        .emoji-option { font-size: 1.3rem; cursor: pointer; padding: 0.3rem; text-align: center; border-radius: 8px; }
+        .emoji-option:hover { background: #f0f0f0; }
+        
+        @media (max-width: 768px) {
+            .messaging-container { flex-direction: column; padding: 5rem 1rem 1rem; }
+            .conversations-sidebar { width: 100%; max-height: 300px; }
+            .message-bubble { max-width: 85%; }
+            .emoji-picker { grid-template-columns: repeat(6, 1fr); max-width: 280px; }
+        }
+    </style>
+</head>
+<body>
+    <nav id="navbar">
+        <div class="nav-container">
+            <div class="logo">💬 Messages</div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">🏠 Home</a></li>
+                <li><a href="editor.html">✏️ Edit Portfolio</a></li>
+                <li><a href="messaging.html">💬 Messages</a></li>
+                <li><span class="user-badge" id="userNameDisplay"></span></li>
+                <li><button id="logoutBtn" class="btn-logout">🚪 Logout</button></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="messaging-container">
+        <div class="conversations-sidebar">
+            <div class="sidebar-header"><h3>💬 Conversations</h3></div>
+            <div class="conversations-list" id="conversationsList"><div style="text-align:center; padding:2rem;">📱 Loading...</div></div>
+        </div>
+        
+        <div class="chat-area">
+            <div class="chat-header"><div class="chat-avatar" id="chatAvatar">?</div><div><h3 id="chatUserName">Select a conversation</h3></div></div>
+            <div class="chat-messages" id="chatMessages"><div class="empty-chat"><p>👈 Select a conversation</p></div></div>
+            <div class="chat-input-area" id="chatInputArea" style="display: none;">
+                <div class="emoji-picker-container"><button class="emoji-btn" id="emojiBtn">😊</button><div class="emoji-picker" id="emojiPicker"></div></div>
+                <input type="text" id="messageInput" class="chat-input" placeholder="💬 Type your message...">
+                <button id="sendBtn" class="send-btn">📤 Send</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const SHEETBEST_STUDENTS_URL = "https://api.sheetbest.com/sheets/54f68e59-9aa4-4e67-b267-1a4241a9a9df";
+        const MESSAGES_API_URL = "https://api.sheetbest.com/sheets/032cac6c-f303-4712-ac3c-ed72f963b983";
+        
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) window.location.href = 'index.html';
+        document.getElementById('userNameDisplay').textContent = currentUser.fullname;
+        
+        let allStudents = [], conversations = [], currentChatUser = null;
+        const urlParams = new URLSearchParams(window.location.search);
+        const directMessageUser = urlParams.get('user');
+        
+        async function loadMessagesFromAPI(user1, user2) {
+            try {
+                const [r1, r2] = await Promise.all([fetch(`${MESSAGES_API_URL}?fromUser=${user1}&toUser=${user2}`), fetch(`${MESSAGES_API_URL}?fromUser=${user2}&toUser=${user1}`)]);
+                let msgs = [...await r1.json(), ...await r2.json()];
+                return msgs.filter((v,i,a)=>a.findIndex(t=>t.id===v.id)===i).sort((a,b)=>new Date(a.timestamp)-new Date(b.timestamp));
+            } catch(e) { return []; }
+        }
+        
+        async function sendMessageToAPI(fromUser, toUser, message) {
+            try {
+                const res = await fetch(MESSAGES_API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: Date.now().toString(), fromUser, toUser, message, timestamp: new Date().toISOString(), read: false }) });
+                return res.ok;
+            } catch(e) { return false; }
+        }
+        
+        async function markMessagesAsRead(fromUser, toUser) {
+            const res = await fetch(`${MESSAGES_API_URL}?fromUser=${fromUser}&toUser=${toUser}&read=false`);
+            const unread = await res.json();
+            for (const msg of unread) await fetch(`${MESSAGES_API_URL}/${msg.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...msg, read: true }) });
+        }
+        
+        async function getAllStudents() { const res = await fetch(SHEETBEST_STUDENTS_URL); return res.json(); }
+        
+        async function buildConversations() {
+            const students = await getAllStudents();
+            allStudents = students;
+            const [sent, received] = await Promise.all([fetch(`${MESSAGES_API_URL}?fromUser=${currentUser.username}`), fetch(`${MESSAGES_API_URL}?toUser=${currentUser.username}`)]);
+            const allMsgs = [...await sent.json(), ...await received.json()];
+            const uniqueUsers = [...new Set(allMsgs.map(m => m.fromUser === currentUser.username ? m.toUser : m.fromUser))];
+            const convs = [];
+            for (const uname of uniqueUsers) {
+                const student = students.find(s => s.username === uname);
+                if (student) {
+                    const msgs = await loadMessagesFromAPI(currentUser.username, uname);
+                    const last = msgs[msgs.length-1];
+                    convs.push({ username: uname, fullname: student.fullname, avatar: student.avatar || student.fullname.charAt(0).toUpperCase(), lastMessage: last?.message || 'No messages', lastTime: last?.timestamp, unread: msgs.filter(m => m.toUser === currentUser.username && !m.read).length });
+                }
+            }
+            return convs.sort((a,b)=>new Date(b.lastTime)-new Date(a.lastTime));
+        }
+        
+        function renderConversations() {
+            const container = document.getElementById('conversationsList');
+            if (conversations.length === 0) { container.innerHTML = '<div style="text-align:center; padding:2rem;"><p>💭 No conversations yet</p></div>'; return; }
+            container.innerHTML = conversations.map(c => `<div class="conversation-item" data-username="${c.username}" onclick="selectConversation('${c.username}')"><div class="conv-avatar">${escapeHtml(c.avatar)}</div><div class="conv-info"><div class="conv-name">${escapeHtml(c.fullname)}</div><div class="conv-last-msg">${escapeHtml(c.lastMessage.substring(0,50))}</div></div>${c.unread > 0 ? `<div class="conv-time" style="background:#667eea; color:white; padding:0.2rem 0.5rem; border-radius:20px;">${c.unread}</div>` : ''}</div>`).join('');
+        }
+        
+        async function renderMessages() {
+            const container = document.getElementById('chatMessages');
+            if (!currentChatUser) { container.innerHTML = '<div class="empty-chat"><p>👈 Select a conversation</p></div>'; document.getElementById('chatInputArea').style.display = 'none'; return; }
+            const msgs = await loadMessagesFromAPI(currentUser.username, currentChatUser);
+            const partner = allStudents.find(s => s.username === currentChatUser);
+            if (partner) { document.getElementById('chatUserName').textContent = partner.fullname; document.getElementById('chatAvatar').textContent = partner.avatar || partner.fullname.charAt(0).toUpperCase(); }
+            if (msgs.length === 0) container.innerHTML = '<div class="empty-chat"><p>💬 No messages yet</p><p>Send a message to start!</p></div>';
+            else {
+                container.innerHTML = msgs.map(m => `<div class="message-bubble ${m.fromUser === currentUser.username ? 'message-sent' : 'message-received'}">${escapeHtml(m.message)}<div class="message-time">${new Date(m.timestamp).toLocaleString()}</div></div>`).join('');
+                await markMessagesAsRead(currentChatUser, currentUser.username);
+                container.scrollTop = container.scrollHeight;
+            }
+            document.getElementById('chatInputArea').style.display = 'flex';
+        }
+        
+        async function selectConversation(username) { currentChatUser = username; await loadAllData(); renderConversations(); await renderMessages(); document.querySelectorAll('.conversation-item').forEach(i => i.classList.toggle('active', i.dataset.username === username)); }
+        
+        async function sendMessage() {
+            const msg = document.getElementById('messageInput').value.trim();
+            if (!msg || !currentChatUser) return;
+            if (await sendMessageToAPI(currentUser.username, currentChatUser, msg)) { document.getElementById('messageInput').value = ''; await loadAllData(); await renderMessages(); renderConversations(); }
+        }
+        
+        async function loadAllData() { conversations = await buildConversations(); renderConversations(); }
+        
+        function escapeHtml(t) { if(!t) return ''; const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
+        
+        // Emoji picker
+        const emojis = ['😀','😃','😄','😁','😅','😂','🤣','😊','😇','🙂','😍','🥰','😘','😎','🤩','🥳','😏','😞','😔','😢','😭','😤','😡','🤯','😳','🥵','🥶','😱','❤️','🧡','💛','💚','💙','💜','👍','👎','👏','🙌','🎉','✨','🔥'];
+        const picker = document.getElementById('emojiPicker');
+        picker.innerHTML = emojis.map(e => `<div class="emoji-option">${e}</div>`).join('');
+        document.getElementById('emojiBtn').addEventListener('click', (e) => { e.stopPropagation(); picker.classList.toggle('active'); });
+        document.querySelectorAll('.emoji-option').forEach(e => e.addEventListener('click', () => { document.getElementById('messageInput').value += e.textContent; picker.classList.remove('active'); }));
+        document.addEventListener('click', () => picker.classList.remove('active'));
+        
+        document.getElementById('sendBtn').addEventListener('click', sendMessage);
+        document.getElementById('messageInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMessage(); });
+        document.getElementById('logoutBtn').addEventListener('click', () => { localStorage.removeItem('currentUser'); window.location.href = 'index.html'; });
+        
+        window.selectConversation = selectConversation;
+        
+        // Navbar scroll
+        window.addEventListener('scroll', function() { const nav = document.getElementById('navbar'); if (window.scrollY > 50) nav.classList.add('scrolled'); else nav.classList.remove('scrolled'); });
+        const hamburger = document.querySelector('.hamburger'), navLinks = document.querySelector('.nav-links');
+        if (hamburger) hamburger.addEventListener('click', () => { hamburger.classList.toggle('active'); navLinks.classList.toggle('active'); });
+        
+        loadAllData().then(() => { if (directMessageUser) selectConversation(directMessageUser); });
+        setInterval(async () => { if (currentChatUser) { await renderMessages(); await loadAllData(); } }, 3000);
+    </script>
+</body>
+</html>

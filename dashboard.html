@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Student Portfolio Hub</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 0.8rem;
+        }
+        
+        .action-btn {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .view-profile-btn {
+            background: #e0e7ff;
+            color: #4f46e5;
+        }
+        
+        .message-btn-sm {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .profile-pic-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 1rem;
+            border: 3px solid white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">🎓 Student Portfolio Hub</div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">🏠 Home</a></li>
+                <li><a href="editor.html">✏️ Edit Portfolio</a></li>
+                <li><a href="messaging.html">💬 Messages</a></li>
+                <li><span class="user-badge" id="userNameDisplay"></span></li>
+                <li><button id="logoutBtn" class="btn-logout">🚪 Logout</button></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <div class="avatar" id="welcomeAvatar"></div>
+                <div>
+                    <h2 id="welcomeMessage"></h2>
+                    <p style="color:#666;">Click on any student card to view their full portfolio</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search by name or username...">
+        </div>
+        
+        <h3 style="margin-bottom: 1rem;">👥 All Students</h3>
+        <div id="studentsGrid" class="students-grid">
+            <div style="text-align:center; padding:2rem; background:white; border-radius:20px;">
+                <span class="loading-spinner"></span> Loading students...
+            </div>
+        </div>
+    </div>
+    
+    <div id="profileModal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2>Student Portfolio</h2>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <div style="text-align:center; padding:2rem;">Loading...</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const SHEETBEST_API_URL = "https://api.sheetbest.com/sheets/54f68e59-9aa4-4e67-b267-1a4241a9a9df";
+        
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) {
+            window.location.href = 'index.html';
+        }
+        
+        document.getElementById('userNameDisplay').textContent = currentUser.fullname;
+        document.getElementById('welcomeAvatar').textContent = currentUser.fullname.charAt(0).toUpperCase();
+        document.getElementById('welcomeMessage').innerHTML = `Welcome back, ${escapeHtml(currentUser.fullname)}! 👋`;
+        
+        let allStudents = [];
+        
+        async function getAllStudents() {
+            const response = await fetch(SHEETBEST_API_URL);
+            return await response.json();
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function renderStudents(students) {
+            const grid = document.getElementById('studentsGrid');
+            
+            if (students.length === 0) {
+                grid.innerHTML = '<div style="text-align:center; padding:2rem; background:white; border-radius:20px;">✨ No students found ✨</div>';
+                return;
+            }
+            
+            grid.innerHTML = '';
+            students.forEach(student => {
+                const card = document.createElement('div');
+                card.className = 'student-card';
+                card.onclick = (e) => {
+                    if (e.target.classList.contains('action-btn')) return;
+                    window.location.href = `profile.html?user=${encodeURIComponent(student.username)}`;
+                };
+                
+                const avatarHtml = student.profilePicture && student.profilePicture.startsWith('data:') 
+                    ? `<img src="${student.profilePicture}" class="profile-pic-preview" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">`
+                    : `<div class="student-avatar">${escapeHtml(student.avatar || student.fullname.charAt(0).toUpperCase())}</div>`;
+                
+                card.innerHTML = `
+                    ${avatarHtml}
+                    <h3>${escapeHtml(student.fullname)}</h3>
+                    <p style="color:#666;">@${escapeHtml(student.username)}</p>
+                    <p style="color:#888; font-size:0.8rem;">📧 ${escapeHtml(student.email)}</p>
+                    <div class="action-buttons">
+                        <a href="profile.html?user=${encodeURIComponent(student.username)}" class="action-btn view-profile-btn" onclick="event.stopPropagation()">👤 View Profile</a>
+                        <a href="messaging.html?user=${encodeURIComponent(student.username)}" class="action-btn message-btn-sm" onclick="event.stopPropagation()">💬 Message</a>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+        
+        function filterStudents(searchTerm) {
+            const term = searchTerm.toLowerCase();
+            const filtered = allStudents.filter(student => 
+                student.fullname.toLowerCase().includes(term) || 
+                student.username.toLowerCase().includes(term)
+            );
+            renderStudents(filtered);
+        }
+        
+        function closeModal() {
+            document.getElementById('profileModal').classList.remove('active');
+        }
+        
+        async function loadStudents() {
+            allStudents = await getAllStudents();
+            renderStudents(allStudents);
+        }
+        
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            filterStudents(e.target.value);
+        });
+        
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        });
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+        
+        document.getElementById('profileModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('profileModal')) closeModal();
+        });
+        
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+        
+        // Mobile menu
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        if (hamburger) {
+            hamburger.addEventListener('click', () => {
+                hamburger.classList.toggle('active');
+                navLinks.classList.toggle('active');
+            });
+        }
+        
+        loadStudents();
+    </script>
+</body>
+</html>

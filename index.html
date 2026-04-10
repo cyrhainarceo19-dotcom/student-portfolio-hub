@@ -3,66 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Portfolio | Sign Up & Login</title>
+    <title>Login | Student Portfolio Hub</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .auth-container {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-
-        .auth-container {
+        
+        .auth-card {
             background: white;
             border-radius: 32px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            padding: 2.5rem;
+            max-width: 450px;
             width: 100%;
-            max-width: 500px;
-            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
         }
-
+        
         .auth-tabs {
             display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
             border-bottom: 2px solid #f0f0f0;
         }
-
+        
         .tab-btn {
             flex: 1;
-            padding: 1.2rem;
+            padding: 0.8rem;
             background: none;
             border: none;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             color: #888;
-            transition: all 0.3s;
         }
-
+        
         .tab-btn.active {
             color: #667eea;
             border-bottom: 3px solid #667eea;
-            background: #f8f9ff;
         }
-
+        
         .auth-form {
-            padding: 2rem;
             display: none;
         }
-
+        
         .auth-form.active {
             display: block;
             animation: fadeScale 0.3s ease;
         }
-
+        
         @keyframes fadeScale {
             from {
                 opacity: 0;
@@ -73,7 +66,7 @@
                 transform: scale(1);
             }
         }
-
+        
         .auth-form h2 {
             margin-bottom: 0.5rem;
             background: linear-gradient(135deg, #667eea, #764ba2);
@@ -81,598 +74,213 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-
-        .auth-form p {
-            color: #666;
-            margin-bottom: 1.8rem;
-            font-size: 0.9rem;
-        }
-
-        .input-group {
-            margin-bottom: 1.2rem;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #333;
-            font-size: 0.9rem;
-        }
-
+        
         .auth-input {
             width: 100%;
             padding: 0.9rem 1rem;
+            margin-bottom: 1rem;
             border: 2px solid #e0e0e0;
             border-radius: 12px;
             font-size: 1rem;
-            transition: all 0.3s;
-            outline: none;
-            font-family: inherit;
         }
-
+        
         .auth-input:focus {
+            outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.2);
         }
-
+        
         .auth-btn {
+            width: 100%;
+            padding: 0.9rem;
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
-            padding: 0.9rem;
-            width: 100%;
             border-radius: 12px;
             font-weight: 600;
-            font-size: 1rem;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin-top: 0.5rem;
+            transition: transform 0.2s;
         }
-
+        
         .auth-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
-
+        
         .auth-btn:disabled {
             opacity: 0.7;
             cursor: not-allowed;
-            transform: none;
-        }
-
-        .message {
-            margin-top: 1rem;
-            padding: 0.8rem;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            display: none;
-        }
-
-        .message.error {
-            background: #fee2e2;
-            color: #dc2626;
-            display: block;
-        }
-
-        .message.success {
-            background: #dcfce7;
-            color: #16a34a;
-            display: block;
-        }
-
-        .loading-spinner {
-            display: inline-block;
-            width: 18px;
-            height: 18px;
-            border: 2px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 0.8s linear infinite;
-            margin-right: 8px;
-            vertical-align: middle;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Dashboard Styles */
-        .dashboard-container {
-            display: none;
-            width: 100%;
-            max-width: 1200px;
-        }
-
-        .dashboard-header {
-            background: white;
-            border-radius: 20px;
-            padding: 1rem 2rem;
-            margin-bottom: 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        }
-
-        .dashboard-logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .user-badge {
-            background: #f0eef7;
-            padding: 0.5rem 1.2rem;
-            border-radius: 40px;
-            font-weight: 500;
-            color: #5a4fcf;
-        }
-
-        .logout-dash-btn {
-            background: #fee2e2;
-            border: none;
-            padding: 0.5rem 1.2rem;
-            border-radius: 40px;
-            cursor: pointer;
-            font-weight: 600;
-            color: #dc2626;
-            transition: 0.2s;
-        }
-
-        .logout-dash-btn:hover {
-            background: #fecaca;
-        }
-
-        .welcome-message {
-            background: white;
-            border-radius: 20px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            text-align: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        }
-
-        .students-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .student-card {
-            background: white;
-            border-radius: 20px;
-            padding: 1.5rem;
-            text-align: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-
-        .student-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .student-avatar {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            font-weight: bold;
-            color: white;
-            margin: 0 auto 1rem;
-        }
-
-        .stats-badge {
-            display: inline-block;
-            background: #e0e7ff;
-            padding: 0.2rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            color: #4f46e5;
-            margin-top: 0.5rem;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 1rem;
-            }
-            .dashboard-header {
-                flex-direction: column;
-                text-align: center;
-            }
         }
     </style>
 </head>
 <body>
-
-<!-- AUTH CONTAINER -->
-<div id="authContainer" class="auth-container">
-    <div class="auth-tabs">
-        <button class="tab-btn active" data-tab="login">🔐 Login</button>
-        <button class="tab-btn" data-tab="signup">📝 Sign Up</button>
-    </div>
-
-    <!-- Login Form -->
-    <div id="loginForm" class="auth-form active">
-        <h2>Welcome Back!</h2>
-        <p>Login to access your student portfolio</p>
-        <div class="input-group">
-            <label>Username</label>
-            <input type="text" id="loginUsername" class="auth-input" placeholder="Enter your username">
-        </div>
-        <div class="input-group">
-            <label>Password</label>
-            <input type="password" id="loginPassword" class="auth-input" placeholder="Enter your password">
-        </div>
-        <button id="loginBtn" class="auth-btn">Login →</button>
-        <div id="loginMessage" class="message"></div>
-    </div>
-
-    <!-- Sign Up Form -->
-    <div id="signupForm" class="auth-form">
-        <h2>Create Account</h2>
-        <p>Join our student portfolio community</p>
-        <div class="input-group">
-            <label>Full Name</label>
-            <input type="text" id="signupFullname" class="auth-input" placeholder="Your full name">
-        </div>
-        <div class="input-group">
-            <label>Username</label>
-            <input type="text" id="signupUsername" class="auth-input" placeholder="Choose a username">
-        </div>
-        <div class="input-group">
-            <label>Email</label>
-            <input type="email" id="signupEmail" class="auth-input" placeholder="your@email.com">
-        </div>
-        <div class="input-group">
-            <label>Password</label>
-            <input type="password" id="signupPassword" class="auth-input" placeholder="Create a password (min 4 chars)">
-        </div>
-        <div class="input-group">
-            <label>Confirm Password</label>
-            <input type="password" id="signupConfirm" class="auth-input" placeholder="Confirm your password">
-        </div>
-        <button id="signupBtn" class="auth-btn">Create Account →</button>
-        <div id="signupMessage" class="message"></div>
-    </div>
-</div>
-
-<!-- DASHBOARD -->
-<div id="dashboardContainer" class="dashboard-container">
-    <div class="dashboard-header">
-        <div class="dashboard-logo">🎓 Student Portfolio Hub</div>
-        <div class="user-info">
-            <span class="user-badge" id="dashboardUserName"></span>
-            <button id="dashboardLogoutBtn" class="logout-dash-btn">Logout</button>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-tabs">
+                <button class="tab-btn active" data-tab="login">🔐 Login</button>
+                <button class="tab-btn" data-tab="signup">📝 Sign Up</button>
+            </div>
+            
+            <div id="loginForm" class="auth-form active">
+                <h2>Welcome Back!</h2>
+                <p style="color:#666; margin-bottom:1.5rem;">Login to access your portfolio</p>
+                <input type="text" id="loginUsername" class="auth-input" placeholder="Username">
+                <input type="password" id="loginPassword" class="auth-input" placeholder="Password">
+                <button id="loginBtn" class="auth-btn">Login →</button>
+                <div id="loginMessage" class="message"></div>
+            </div>
+            
+            <div id="signupForm" class="auth-form">
+                <h2>Create Account</h2>
+                <p style="color:#666; margin-bottom:1.5rem;">Join the student community</p>
+                <input type="text" id="signupFullname" class="auth-input" placeholder="Full Name">
+                <input type="text" id="signupUsername" class="auth-input" placeholder="Username">
+                <input type="email" id="signupEmail" class="auth-input" placeholder="Email">
+                <input type="password" id="signupPassword" class="auth-input" placeholder="Password (min 4 chars)">
+                <input type="password" id="signupConfirm" class="auth-input" placeholder="Confirm Password">
+                <button id="signupBtn" class="auth-btn">Create Account →</button>
+                <div id="signupMessage" class="message"></div>
+            </div>
         </div>
     </div>
-    <div class="welcome-message" id="welcomeMessage"></div>
-    <div class="students-grid" id="studentsGrid"></div>
-</div>
-
-<script>
-    // ============ SHEET.BEST API CONFIGURATION ============
-    const SHEETBEST_API_URL = "https://api.sheetbest.com/sheets/54f68e59-9aa4-4e67-b267-1a4241a9a9df";
     
-    // ============ HELPER FUNCTIONS ============
-    function showMessage(element, text, type) {
-        element.textContent = text;
-        element.className = `message ${type}`;
-        setTimeout(() => {
-            element.style.display = 'none';
-        }, 4000);
-    }
-    
-    // Get all students from Sheet.best
-    async function getAllStudents() {
-        try {
-            const response = await fetch(SHEETBEST_API_URL);
-            if (!response.ok) throw new Error('Failed to fetch');
-            return await response.json();
-        } catch (error) {
-            console.error('Error fetching students:', error);
-            return [];
+    <script>
+        const SHEETBEST_API_URL = "https://api.sheetbest.com/sheets/54f68e59-9aa4-4e67-b267-1a4241a9a9df";
+        
+        function showMessage(element, text, type) {
+            element.textContent = text;
+            element.className = `message ${type}`;
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 4000);
         }
-    }
-    
-    // Add new student to Sheet.best
-    async function addStudent(studentData) {
-        try {
+        
+        async function getAllStudents() {
+            const response = await fetch(SHEETBEST_API_URL);
+            return await response.json();
+        }
+        
+        async function addStudent(data) {
             const response = await fetch(SHEETBEST_API_URL, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(studentData)
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
             });
-            
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(errorText || 'Failed to add student');
-            }
             return await response.json();
-        } catch (error) {
-            console.error('Error adding student:', error);
-            throw error;
-        }
-    }
-    
-    // ============ AUTHENTICATION FUNCTIONS ============
-    async function handleSignup() {
-        const fullname = document.getElementById('signupFullname').value.trim();
-        const username = document.getElementById('signupUsername').value.trim();
-        const email = document.getElementById('signupEmail').value.trim();
-        const password = document.getElementById('signupPassword').value;
-        const confirm = document.getElementById('signupConfirm').value;
-        
-        // Validation
-        if (!fullname || !username || !email || !password) {
-            showMessage(document.getElementById('signupMessage'), '❌ Please fill in all fields', 'error');
-            return;
         }
         
-        if (password !== confirm) {
-            showMessage(document.getElementById('signupMessage'), '❌ Passwords do not match', 'error');
-            return;
-        }
-        
-        if (password.length < 4) {
-            showMessage(document.getElementById('signupMessage'), '❌ Password must be at least 4 characters', 'error');
-            return;
-        }
-        
-        // Email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            showMessage(document.getElementById('signupMessage'), '❌ Please enter a valid email address', 'error');
-            return;
-        }
-        
-        signupBtn.disabled = true;
-        signupBtn.innerHTML = '<span class="loading-spinner"></span> Creating account...';
-        
-        try {
-            // Check if username or email already exists
-            const existingStudents = await getAllStudents();
+        async function handleSignup() {
+            const fullname = document.getElementById('signupFullname').value.trim();
+            const username = document.getElementById('signupUsername').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            const confirm = document.getElementById('signupConfirm').value;
             
-            const usernameExists = existingStudents.some(s => s.username === username);
-            if (usernameExists) {
-                showMessage(document.getElementById('signupMessage'), '❌ Username already exists. Please choose another.', 'error');
-                signupBtn.disabled = false;
-                signupBtn.innerHTML = 'Create Account →';
+            if (!fullname || !username || !email || !password) {
+                showMessage(document.getElementById('signupMessage'), '❌ Please fill all fields', 'error');
+                return;
+            }
+            if (password !== confirm) {
+                showMessage(document.getElementById('signupMessage'), '❌ Passwords do not match', 'error');
+                return;
+            }
+            if (password.length < 4) {
+                showMessage(document.getElementById('signupMessage'), '❌ Password must be at least 4 characters', 'error');
                 return;
             }
             
-            const emailExists = existingStudents.some(s => s.email === email);
-            if (emailExists) {
-                showMessage(document.getElementById('signupMessage'), '❌ Email already registered. Please use another email.', 'error');
-                signupBtn.disabled = false;
-                signupBtn.innerHTML = 'Create Account →';
-                return;
-            }
+            const signupBtn = document.getElementById('signupBtn');
+            signupBtn.disabled = true;
+            signupBtn.innerHTML = '<span class="loading-spinner"></span> Creating...';
             
-            // Create new student object
-            const avatar = fullname.charAt(0).toUpperCase();
-            const now = new Date();
-            const createdAt = `${now.getMonth()+1}/${now.getDate()}/${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
-            
-            const newStudent = {
-                fullname: fullname,
-                username: username,
-                email: email,
-                password: password,
-                createdAt: createdAt,
-                avatar: avatar
-            };
-            
-            await addStudent(newStudent);
-            
-            showMessage(document.getElementById('signupMessage'), '✅ Account created successfully! Please login.', 'success');
-            
-            // Clear form
-            document.getElementById('signupFullname').value = '';
-            document.getElementById('signupUsername').value = '';
-            document.getElementById('signupEmail').value = '';
-            document.getElementById('signupPassword').value = '';
-            document.getElementById('signupConfirm').value = '';
-            
-            // Switch to login tab
-            setTimeout(() => {
-                document.querySelector('.tab-btn[data-tab="login"]').click();
-            }, 1500);
-            
-        } catch (error) {
-            console.error('Signup error:', error);
-            showMessage(document.getElementById('signupMessage'), '❌ Error creating account. Please try again.', 'error');
-        } finally {
-            signupBtn.disabled = false;
-            signupBtn.innerHTML = 'Create Account →';
-        }
-    }
-    
-    async function handleLogin() {
-        const username = document.getElementById('loginUsername').value.trim();
-        const password = document.getElementById('loginPassword').value;
-        
-        if (!username || !password) {
-            showMessage(document.getElementById('loginMessage'), '❌ Please enter username and password', 'error');
-            return;
-        }
-        
-        loginBtn.disabled = true;
-        loginBtn.innerHTML = '<span class="loading-spinner"></span> Logging in...';
-        
-        try {
-            const students = await getAllStudents();
-            
-            // Find user with matching username and password
-            const user = students.find(s => s.username === username && s.password === password);
-            
-            if (user) {
-                const userData = {
-                    fullname: user.fullname,
-                    username: user.username,
-                    email: user.email,
-                    avatar: user.avatar
-                };
-                localStorage.setItem('studentUser', JSON.stringify(userData));
-                currentUser = userData;
-                showDashboard();
-            } else {
-                showMessage(document.getElementById('loginMessage'), '❌ Invalid username or password', 'error');
-            }
-        } catch (error) {
-            console.error('Login error:', error);
-            showMessage(document.getElementById('loginMessage'), '❌ Connection error. Please try again.', 'error');
-        } finally {
-            loginBtn.disabled = false;
-            loginBtn.innerHTML = 'Login →';
-        }
-    }
-    
-    // ============ DASHBOARD FUNCTIONS ============
-    async function loadAllStudents() {
-        studentsGrid.innerHTML = '<div style="text-align:center; padding:2rem; background:white; border-radius:20px;"><span class="loading-spinner"></span> Loading students...</div>';
-        
-        try {
-            const students = await getAllStudents();
-            
-            if (students.length > 0) {
-                studentsGrid.innerHTML = '';
-                students.forEach(student => {
-                    const card = document.createElement('div');
-                    card.className = 'student-card';
-                    card.innerHTML = `
-                        <div class="student-avatar">${escapeHtml(student.avatar || student.fullname.charAt(0).toUpperCase())}</div>
-                        <h3>${escapeHtml(student.fullname)}</h3>
-                        <p style="color:#666;">@${escapeHtml(student.username)}</p>
-                        <p style="color:#888; font-size:0.8rem; margin-top:0.5rem;">📧 ${escapeHtml(student.email)}</p>
-                        <div class="stats-badge">🎓 Student</div>
-                    `;
-                    studentsGrid.appendChild(card);
+            try {
+                const students = await getAllStudents();
+                if (students.some(s => s.username === username)) {
+                    showMessage(document.getElementById('signupMessage'), '❌ Username already exists', 'error');
+                    return;
+                }
+                if (students.some(s => s.email === email)) {
+                    showMessage(document.getElementById('signupMessage'), '❌ Email already registered', 'error');
+                    return;
+                }
+                
+                const now = new Date();
+                await addStudent({
+                    fullname, username, email, password,
+                    createdAt: now.toLocaleString(),
+                    avatar: fullname.charAt(0).toUpperCase(),
+                    profilePicture: "",
+                    bio: "Hello! I'm a student passionate about technology.",
+                    location: "",
+                    skills: "",
+                    projects: "[]",
+                    achievements: ""
                 });
-            } else {
-                studentsGrid.innerHTML = '<div style="text-align:center; padding:2rem; background:white; border-radius:20px;">✨ No other students yet. Be the first! ✨</div>';
+                
+                showMessage(document.getElementById('signupMessage'), '✅ Account created! Please login.', 'success');
+                setTimeout(() => {
+                    document.querySelector('[data-tab="login"]').click();
+                    document.getElementById('loginUsername').value = username;
+                }, 1500);
+            } catch (error) {
+                showMessage(document.getElementById('signupMessage'), '❌ Error creating account', 'error');
+            } finally {
+                signupBtn.disabled = false;
+                signupBtn.innerHTML = 'Create Account →';
             }
-        } catch (error) {
-            console.error('Error loading students:', error);
-            studentsGrid.innerHTML = '<div style="text-align:center; padding:2rem; background:white; border-radius:20px;">❌ Error loading students. Please refresh.</div>';
         }
-    }
-    
-    function escapeHtml(text) {
-        if (!text) return '';
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-    
-    let currentUser = null;
-    
-    function showDashboard() {
-        document.getElementById('authContainer').style.display = 'none';
-        document.getElementById('dashboardContainer').style.display = 'block';
-        document.body.style.background = '#f0f2f5';
         
-        document.getElementById('dashboardUserName').textContent = currentUser.fullname;
-        document.getElementById('welcomeMessage').innerHTML = `
-            <h2>🎉 Welcome, ${escapeHtml(currentUser.fullname)}!</h2>
-            <p style="color:#666; margin-top:0.5rem;">You're now part of the Student Portfolio Hub. Connect with fellow students below.</p>
-            <p style="color:#888; font-size:0.85rem; margin-top:0.5rem;">Total students: <span id="studentCount">--</span></p>
-        `;
+        async function handleLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!username || !password) {
+                showMessage(document.getElementById('loginMessage'), '❌ Enter username and password', 'error');
+                return;
+            }
+            
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<span class="loading-spinner"></span> Logging in...';
+            
+            try {
+                const students = await getAllStudents();
+                const user = students.find(s => s.username === username && s.password === password);
+                
+                if (user) {
+                    localStorage.setItem('currentUser', JSON.stringify({
+                        id: user.id || user.username,
+                        fullname: user.fullname,
+                        username: user.username,
+                        email: user.email,
+                        profilePicture: user.profilePicture || ""
+                    }));
+                    window.location.href = 'dashboard.html';
+                } else {
+                    showMessage(document.getElementById('loginMessage'), '❌ Invalid username or password', 'error');
+                }
+            } catch (error) {
+                showMessage(document.getElementById('loginMessage'), '❌ Connection error', 'error');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = 'Login →';
+            }
+        }
         
-        loadAllStudents().then(() => {
-            // Update student count after loading
-            const count = document.querySelectorAll('.student-card').length;
-            const countSpan = document.getElementById('studentCount');
-            if (countSpan) countSpan.textContent = count;
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.dataset.tab;
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById('loginForm').classList.toggle('active', tab === 'login');
+                document.getElementById('signupForm').classList.toggle('active', tab === 'signup');
+            });
         });
-    }
-    
-    function logout() {
-        localStorage.removeItem('studentUser');
-        currentUser = null;
-        document.getElementById('authContainer').style.display = 'block';
-        document.getElementById('dashboardContainer').style.display = 'none';
-        document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-        document.getElementById('loginUsername').value = '';
-        document.getElementById('loginPassword').value = '';
-        document.getElementById('loginMessage').style.display = 'none';
-    }
-    
-    // ============ TAB SWITCHING ============
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const tab = btn.getAttribute('data-tab');
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
-            const loginForm = document.getElementById('loginForm');
-            const signupForm = document.getElementById('signupForm');
-            
-            if (tab === 'login') {
-                loginForm.classList.add('active');
-                signupForm.classList.remove('active');
-            } else {
-                signupForm.classList.add('active');
-                loginForm.classList.remove('active');
-            }
+        
+        document.getElementById('loginBtn').addEventListener('click', handleLogin);
+        document.getElementById('signupBtn').addEventListener('click', handleSignup);
+        
+        document.getElementById('loginPassword').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleLogin();
         });
-    });
-    
-    // ============ EVENT LISTENERS ============
-    document.getElementById('loginBtn').addEventListener('click', handleLogin);
-    document.getElementById('signupBtn').addEventListener('click', handleSignup);
-    document.getElementById('dashboardLogoutBtn').addEventListener('click', logout);
-    
-    // Enter key support
-    document.getElementById('loginPassword').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleLogin();
-    });
-    document.getElementById('signupConfirm').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleSignup();
-    });
-    
-    // ============ CHECK EXISTING SESSION ============
-    const savedUser = localStorage.getItem('studentUser');
-    if (savedUser) {
-        try {
-            currentUser = JSON.parse(savedUser);
-            showDashboard();
-        } catch(e) {
-            logout();
-        }
-    }
-    
-    // ============ TEST CONNECTION ON LOAD ============
-    async function testConnection() {
-        try {
-            const response = await fetch(SHEETBEST_API_URL);
-            if (response.ok) {
-                console.log('✅ Sheet.best API connected successfully!');
-                const data = await response.json();
-                console.log(`📊 Found ${data.length} student(s) in database`);
-            }
-        } catch(e) {
-            console.log('⚠️ Sheet.best API connection test failed:', e);
-        }
-    }
-    testConnection();
-</script>
+    </script>
 </body>
 </html>
