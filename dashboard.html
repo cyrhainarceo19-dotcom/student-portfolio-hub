@@ -4,127 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Dashboard | Student Portfolio Hub</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', 'Segoe UI', sans-serif;
-            background: #f5f7fb;
-            overflow-x: hidden;
-        }
-
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
-            border-radius: 5px;
-        }
-
-        nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.96);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            padding: 1rem 0;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
-        }
-
-        nav.scrolled {
-            padding: 0.7rem 0;
-            background: rgba(255, 255, 255, 1);
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 2rem;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .nav-links {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: #2d2d2d;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: #667eea;
-        }
-
-        .user-badge {
-            background: #f0eef7;
-            padding: 0.4rem 1rem;
-            border-radius: 30px;
-            font-weight: 500;
-            color: #5a4fcf;
-        }
-
-        .btn-logout {
-            background: #fee2e2;
-            border: none;
-            padding: 0.4rem 1.2rem;
-            border-radius: 30px;
-            cursor: pointer;
-            color: #dc2626;
-            font-weight: 500;
-            transition: 0.2s;
-        }
-
-        .btn-logout:hover {
-            background: #fecaca;
-        }
-
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            cursor: pointer;
-            gap: 5px;
-        }
-
-        .hamburger span {
-            width: 25px;
-            height: 3px;
-            background: #2d2d2d;
-            transition: 0.3s;
-            border-radius: 2px;
-        }
-
         .my-profile-container {
             max-width: 900px;
             margin: 0 auto;
             padding: 6rem 2rem 2rem;
         }
-
         .profile-cover {
             background: linear-gradient(135deg, #667eea, #764ba2);
             border-radius: 24px;
@@ -135,7 +21,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .profile-cover::before {
             content: '';
             position: absolute;
@@ -145,12 +30,10 @@
             background-size: 40px 40px;
             animation: moveBackground 20s linear infinite;
         }
-
         @keyframes moveBackground {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(40px, 40px); }
+            0% { transform: translate(0,0); }
+            100% { transform: translate(40px,40px); }
         }
-
         .profile-large-avatar {
             width: 150px;
             height: 150px;
@@ -167,7 +50,6 @@
             position: relative;
             z-index: 1;
         }
-
         .profile-stats {
             display: flex;
             justify-content: center;
@@ -177,19 +59,16 @@
             position: relative;
             z-index: 1;
         }
-
         .stat-box {
             background: rgba(255,255,255,0.15);
             padding: 0.5rem 1.5rem;
             border-radius: 40px;
             text-align: center;
         }
-
         .stat-number {
             font-size: 1.5rem;
             font-weight: bold;
         }
-
         .section-card {
             background: white;
             border-radius: 20px;
@@ -198,11 +77,9 @@
             box-shadow: 0 5px 20px rgba(0,0,0,0.08);
             transition: transform 0.3s;
         }
-
         .section-card:hover {
             transform: translateY(-5px);
         }
-
         .section-title {
             color: #667eea;
             margin-bottom: 1rem;
@@ -212,17 +89,6 @@
             align-items: center;
             gap: 0.5rem;
         }
-
-        .skill-tag {
-            display: inline-block;
-            background: #e0e7ff;
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            margin: 0.3rem;
-            color: #4f46e5;
-        }
-
         .project-card {
             background: #f8fafc;
             padding: 1rem;
@@ -230,7 +96,6 @@
             margin-bottom: 1rem;
             border-left: 4px solid #667eea;
         }
-
         .achievement-badge {
             display: inline-block;
             background: #fef3c7;
@@ -239,7 +104,6 @@
             margin: 0.3rem;
             font-size: 0.85rem;
         }
-
         .contact-info {
             display: flex;
             align-items: center;
@@ -249,62 +113,39 @@
             padding: 1rem;
             border-radius: 12px;
         }
-
-        .btn-edit {
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        .btn-edit, .btn-view-students {
             display: inline-block;
-            background: white;
-            color: #667eea;
             padding: 0.8rem 1.5rem;
             border-radius: 40px;
             text-decoration: none;
             font-weight: 600;
-            margin-top: 1rem;
             transition: transform 0.2s;
-            position: relative;
-            z-index: 1;
         }
-
-        .btn-edit:hover {
+        .btn-edit {
+            background: white;
+            color: #667eea;
+            border: 2px solid white;
+        }
+        .btn-view-students {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+        }
+        .btn-edit:hover, .btn-view-students:hover {
             transform: translateY(-2px);
         }
-
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #e2e8f0;
-            border-radius: 50%;
-            border-top-color: #667eea;
-            animation: spin 0.8s linear infinite;
-            margin-right: 8px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
         @media (max-width: 768px) {
-            .nav-links {
-                position: fixed;
-                left: -100%;
-                top: 70px;
-                flex-direction: column;
-                background: white;
-                width: 100%;
-                text-align: center;
-                transition: 0.3s;
-                padding: 2rem 0;
-                gap: 1.5rem;
-                box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            }
-            .nav-links.active {
-                left: 0;
-            }
-            .hamburger {
-                display: flex;
-            }
             .my-profile-container {
                 padding: 5rem 1rem 1rem;
+            }
+            .profile-stats {
+                gap: 1rem;
             }
         }
     </style>
@@ -317,14 +158,11 @@
                 <li><a href="dashboard.html">🏠 My Profile</a></li>
                 <li><a href="students.html">👥 All Students</a></li>
                 <li><a href="editor.html">✏️ Edit Portfolio</a></li>
+                <li><a href="messaging.html">💬 Messages</a></li>
                 <li><span class="user-badge" id="userNameDisplay"></span></li>
                 <li><button id="logoutBtn" class="btn-logout">🚪 Logout</button></li>
             </ul>
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+            <div class="hamburger"><span></span><span></span><span></span></div>
         </div>
     </nav>
     
@@ -337,11 +175,10 @@
     </div>
     
     <script>
-        const SHEETBEST_API_URL = "https://api.sheetbest.com/sheets/54f68e59-9aa4-4e67-b267-1a4241a9a9df";
+        const API_URL = "https://api.sheetbest.com/sheets/54f68e59-9aa4-4e67-b267-1a4241a9a9df";
         
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
         if (!currentUser) window.location.href = 'index.html';
-        
         document.getElementById('userNameDisplay').textContent = currentUser.fullname;
         
         function escapeHtml(text) {
@@ -353,23 +190,22 @@
         
         async function loadMyProfile() {
             try {
-                const response = await fetch(SHEETBEST_API_URL);
+                const response = await fetch(API_URL);
                 const students = await response.json();
                 const user = students.find(s => s.username === currentUser.username);
                 
                 if (!user) {
-                    document.getElementById('profileContent').innerHTML = `<div class="section-card"><h2>User not found</h2><a href="index.html">Login</a></div>`;
+                    document.getElementById('profileContent').innerHTML = '<div class="section-card"><h2>❌ User Not Found</h2></div>';
                     return;
                 }
                 
                 const skills = user.skills ? user.skills.split(',').map(s => s.trim()).filter(s => s) : [];
                 const projects = user.projects ? JSON.parse(user.projects) : [];
                 const achievements = user.achievements ? user.achievements.split(',').map(a => a.trim()).filter(a => a) : [];
-                const profilePicture = user.profilePicture || '';
                 
-                const avatarHtml = profilePicture && profilePicture.startsWith('data:')
-                    ? `<img src="${profilePicture}" class="profile-large-avatar" style="object-fit:cover;">`
-                    : `<div class="profile-large-avatar">${escapeHtml((user.fullname || 'U').charAt(0).toUpperCase())}</div>`;
+                const avatarHtml = user.profilePicture && user.profilePicture.startsWith('data:')
+                    ? `<img src="${user.profilePicture}" class="profile-large-avatar" style="object-fit:cover;">`
+                    : `<div class="profile-large-avatar">${escapeHtml(user.fullname.charAt(0).toUpperCase())}</div>`;
                 
                 document.getElementById('profileContent').innerHTML = `
                     <div class="profile-cover">
@@ -381,28 +217,52 @@
                             <div class="stat-box"><div class="stat-number">${projects.length}</div><div>Projects</div></div>
                             <div class="stat-box"><div class="stat-number">${achievements.length}</div><div>Achievements</div></div>
                         </div>
-                        <a href="editor.html" class="btn-edit">✏️ Edit My Portfolio</a>
+                        <div class="action-buttons">
+                            <a href="editor.html" class="btn-edit">✏️ Edit Portfolio</a>
+                            <a href="students.html" class="btn-view-students">👥 View Other Students</a>
+                        </div>
                     </div>
-                    <div class="section-card"><div class="section-title">📝 About Me</div><p>${escapeHtml(user.bio || 'No bio added yet.')}</p><div><strong>📍 Location:</strong> ${escapeHtml(user.location || 'Not specified')}</div></div>
-                    <div class="section-card"><div class="section-title">📧 Contact</div><div class="contact-info">✉️ ${escapeHtml(user.email)}</div></div>
-                    <div class="section-card"><div class="section-title">🛠️ Skills</div><div>${skills.length ? skills.map(s => `<span class="skill-tag">${escapeHtml(s)}</span>`).join('') : '<p>No skills added.</p>'}</div></div>
-                    <div class="section-card"><div class="section-title">🚀 Projects</div>${projects.length ? projects.map(p => `<div class="project-card"><h4>${escapeHtml(p.name)}</h4><p>${escapeHtml(p.desc)}</p></div>`).join('') : '<p>No projects added.</p>'}</div>
-                    <div class="section-card"><div class="section-title">🏆 Achievements</div><div>${achievements.length ? achievements.map(a => `<span class="achievement-badge">🏅 ${escapeHtml(a)}</span>`).join('') : '<p>No achievements added.</p>'}</div></div>
+                    <div class="section-card">
+                        <div class="section-title">📝 About Me</div>
+                        <p>${escapeHtml(user.bio || 'No bio added yet.')}</p>
+                        <div style="margin-top:1rem;"><strong>📍 Location:</strong> ${escapeHtml(user.location || 'Not specified')}</div>
+                        <div><strong>📅 Joined:</strong> ${escapeHtml(user.createdAt || 'Recently')}</div>
+                    </div>
+                    <div class="section-card">
+                        <div class="section-title">📧 Contact</div>
+                        <div class="contact-info">✉️ ${escapeHtml(user.email)}</div>
+                    </div>
+                    <div class="section-card">
+                        <div class="section-title">🛠️ Skills</div>
+                        <div>${skills.length ? skills.map(s => `<span class="skill-tag">${escapeHtml(s)}</span>`).join('') : '<p>No skills added yet.</p>'}</div>
+                    </div>
+                    <div class="section-card">
+                        <div class="section-title">🚀 Projects</div>
+                        ${projects.length ? projects.map(p => `<div class="project-card"><h4>📌 ${escapeHtml(p.name)}</h4><p>${escapeHtml(p.desc)}</p></div>`).join('') : '<p>No projects added yet.</p>'}
+                    </div>
+                    <div class="section-card">
+                        <div class="section-title">🏆 Achievements</div>
+                        <div>${achievements.length ? achievements.map(a => `<span class="achievement-badge">🏅 ${escapeHtml(a)}</span>`).join('') : '<p>No achievements added yet.</p>'}</div>
+                    </div>
                 `;
-            } catch (error) {
-                document.getElementById('profileContent').innerHTML = `<div class="section-card"><h2>Error loading profile</h2></div>`;
-            }
+            } catch(e) { console.error(e); }
         }
         
-        document.getElementById('logoutBtn').addEventListener('click', () => {
+        document.getElementById('logoutBtn').onclick = () => {
             localStorage.removeItem('currentUser');
             window.location.href = 'index.html';
-        });
+        };
         
         window.addEventListener('scroll', () => document.querySelector('nav').classList.toggle('scrolled', window.scrollY > 50));
+        
         const hamburger = document.querySelector('.hamburger');
         const navLinks = document.querySelector('.nav-links');
-        if (hamburger) hamburger.addEventListener('click', () => { hamburger.classList.toggle('active'); navLinks.classList.toggle('active'); });
+        if (hamburger) {
+            hamburger.onclick = () => {
+                hamburger.classList.toggle('active');
+                navLinks.classList.toggle('active');
+            };
+        }
         
         loadMyProfile();
     </script>
