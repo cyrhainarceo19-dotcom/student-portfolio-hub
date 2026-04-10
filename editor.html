@@ -4,100 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Portfolio | Student Portfolio Hub</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', 'Segoe UI', sans-serif;
-            background: #f5f7fb;
-        }
-
-        nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.96);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            padding: 1rem 0;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
-        }
-
-        nav.scrolled {
-            padding: 0.7rem 0;
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 2rem;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .nav-links {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: #2d2d2d;
-            font-weight: 500;
-        }
-
-        .user-badge {
-            background: #f0eef7;
-            padding: 0.4rem 1rem;
-            border-radius: 30px;
-            color: #5a4fcf;
-        }
-
-        .btn-logout {
-            background: #fee2e2;
-            border: none;
-            padding: 0.4rem 1.2rem;
-            border-radius: 30px;
-            cursor: pointer;
-            color: #dc2626;
-        }
-
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            cursor: pointer;
-            gap: 5px;
-        }
-
-        .hamburger span {
-            width: 25px;
-            height: 3px;
-            background: #2d2d2d;
-            transition: 0.3s;
-        }
-
-        .container {
-            max-width: 800px;
+        .editor-container {
+            max-width: 900px;
             margin: 0 auto;
             padding: 6rem 2rem 2rem;
         }
-
         .editor-card {
             background: white;
             border-radius: 24px;
@@ -105,7 +18,6 @@
             margin-bottom: 1.5rem;
             box-shadow: 0 5px 20px rgba(0,0,0,0.08);
         }
-
         .editor-title {
             font-size: 1.3rem;
             color: #667eea;
@@ -113,116 +25,90 @@
             padding-bottom: 0.5rem;
             border-bottom: 2px solid #f0f0f0;
         }
-
         .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: 1.2rem;
         }
-
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
         .form-input, .form-textarea {
             width: 100%;
-            padding: 0.8rem;
+            padding: 0.8rem 1rem;
             border: 2px solid #e2e8f0;
             border-radius: 12px;
             font-size: 1rem;
-            outline: none;
+            font-family: inherit;
         }
-
         .form-input:focus, .form-textarea:focus {
+            outline: none;
             border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.2);
         }
-
         .form-textarea {
-            min-height: 100px;
             resize: vertical;
+            min-height: 100px;
         }
-
-        .profile-picture-section {
-            text-align: center;
-        }
-
-        .profile-preview {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid #667eea;
-            margin-bottom: 1rem;
-        }
-
-        .upload-btn {
-            background: #e2e8f0;
-            padding: 0.5rem 1rem;
-            border-radius: 30px;
-            cursor: pointer;
-            display: inline-block;
-        }
-
-        .btn-danger {
-            background: #fee2e2;
-            color: #dc2626;
-            border: none;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            cursor: pointer;
-        }
-
-        .skills-container {
+        .skills-container, .achievements-container {
             display: flex;
             flex-wrap: wrap;
             gap: 0.5rem;
             margin-bottom: 1rem;
+            padding: 0.5rem;
+            background: #f8fafc;
+            border-radius: 12px;
+            min-height: 60px;
         }
-
-        .skill-tag-editable {
+        .skill-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             padding: 0.4rem 0.8rem;
             border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        .achievement-tag {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
         }
-
-        .skill-remove, .achievement-remove {
-            background: rgba(255,255,255,0.2);
+        .remove-btn {
+            background: rgba(0,0,0,0.2);
             border: none;
             color: white;
             cursor: pointer;
             border-radius: 50%;
             width: 18px;
             height: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
         }
-
-        .add-skill {
+        .remove-ach {
+            background: #fed7aa;
+            color: #92400e;
+        }
+        .add-section {
             display: flex;
             gap: 0.5rem;
+            margin-top: 0.5rem;
         }
-
-        .add-skill input {
+        .add-section input {
             flex: 1;
             padding: 0.6rem;
             border: 2px solid #e2e8f0;
             border-radius: 12px;
         }
-
-        .btn-secondary {
-            background: #f0f0f0;
-            padding: 0.6rem 1rem;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
         .project-item {
             background: #f8fafc;
             padding: 1rem;
@@ -230,54 +116,75 @@
             margin-bottom: 1rem;
             border-left: 4px solid #667eea;
         }
-
-        .achievement-item {
-            background: #fef3c7;
-            padding: 0.4rem 0.8rem;
-            border-radius: 20px;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin: 0.2rem;
+        .project-name {
+            width: 100%;
+            padding: 0.6rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
         }
-
+        .project-desc {
+            width: 100%;
+            padding: 0.6rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            resize: vertical;
+            min-height: 60px;
+            font-family: inherit;
+        }
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .btn-secondary:hover {
+            background: #cbd5e1;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
         .action-buttons {
             display: flex;
             gap: 1rem;
+            margin-top: 1.5rem;
         }
-
         .message {
             margin-top: 1rem;
             padding: 0.8rem;
             border-radius: 12px;
+            display: none;
         }
-
         .message.success {
             background: #dcfce7;
             color: #16a34a;
+            display: block;
         }
-
         .message.error {
             background: #fee2e2;
             color: #dc2626;
+            display: block;
         }
-
         @media (max-width: 768px) {
-            .nav-links {
-                position: fixed;
-                left: -100%;
-                top: 70px;
+            .editor-container {
+                padding: 5rem 1rem 1rem;
+            }
+            .action-buttons {
                 flex-direction: column;
-                background: white;
-                width: 100%;
-                transition: 0.3s;
-                padding: 2rem;
-            }
-            .nav-links.active {
-                left: 0;
-            }
-            .hamburger {
-                display: flex;
             }
         }
     </style>
@@ -287,9 +194,10 @@
         <div class="nav-container">
             <div class="logo">✏️ Edit Portfolio</div>
             <ul class="nav-links">
-                <li><a href="dashboard.html">🏠 Home</a></li>
-                <li><a href="editor.html">✏️ Edit</a></li>
-                <li><a href="students.html">👥 Students</a></li>
+                <li><a href="dashboard.html">🏠 My Profile</a></li>
+                <li><a href="students.html">👥 All Students</a></li>
+                <li><a href="editor.html">✏️ Edit Portfolio</a></li>
+                <li><a href="messaging.html">💬 Messages</a></li>
                 <li><span class="user-badge" id="userNameDisplay"></span></li>
                 <li><button id="logoutBtn" class="btn-logout">🚪 Logout</button></li>
             </ul>
@@ -297,98 +205,146 @@
         </div>
     </nav>
     
-    <div class="container">
+    <div class="editor-container">
         <div class="editor-card">
-            <div class="editor-title">📸 Profile Picture</div>
-            <div class="profile-picture-section">
-                <img id="profilePreview" class="profile-preview" src="https://via.placeholder.com/120?text=Photo">
-                <div><label class="upload-btn">📷 Upload<input type="file" id="profilePictureInput" accept="image/*" style="display:none;"></label>
-                <button id="removePhotoBtn" class="btn-danger">Remove</button></div>
+            <div class="editor-title">📝 Basic Information</div>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="editFullname" class="form-input">
+            </div>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="editUsername" class="form-input" disabled style="background:#f5f5f5;">
+            </div>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="editEmail" class="form-input">
+            </div>
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" id="editLocation" class="form-input" placeholder="e.g., Manila, Philippines">
+            </div>
+            <div class="form-group">
+                <label>Bio / About Me</label>
+                <textarea id="editBio" class="form-textarea" placeholder="Tell us about yourself..."></textarea>
             </div>
         </div>
-        <div class="editor-card">
-            <div class="editor-title">📝 Basic Info</div>
-            <div class="form-group"><input type="text" id="editFullname" class="form-input" placeholder="Full Name"></div>
-            <div class="form-group"><input type="text" id="editUsername" class="form-input" disabled placeholder="Username"></div>
-            <div class="form-group"><input type="email" id="editEmail" class="form-input" placeholder="Email"></div>
-            <div class="form-group"><input type="text" id="editLocation" class="form-input" placeholder="Location"></div>
-            <div class="form-group"><textarea id="editBio" class="form-textarea" placeholder="Bio"></textarea></div>
-        </div>
+        
         <div class="editor-card">
             <div class="editor-title">🛠️ Skills</div>
             <div id="skillsList" class="skills-container"></div>
-            <div class="add-skill"><input type="text" id="newSkill" placeholder="Add skill"><button id="addSkillBtn" class="btn-secondary">+ Add</button></div>
+            <div class="add-section">
+                <input type="text" id="newSkill" placeholder="Enter a skill (e.g., Python, React)">
+                <button id="addSkillBtn" class="btn-secondary">+ Add Skill</button>
+            </div>
         </div>
+        
         <div class="editor-card">
             <div class="editor-title">🚀 Projects</div>
             <div id="projectsList"></div>
             <button id="addProjectBtn" class="btn-secondary">+ Add New Project</button>
         </div>
+        
         <div class="editor-card">
             <div class="editor-title">🏆 Achievements</div>
-            <div id="achievementsList" class="skills-container"></div>
-            <div class="add-skill"><input type="text" id="newAchievement" placeholder="Add achievement"><button id="addAchievementBtn" class="btn-secondary">+ Add</button></div>
+            <div id="achievementsList" class="achievements-container"></div>
+            <div class="add-section">
+                <input type="text" id="newAchievement" placeholder="Enter an achievement (e.g., Dean's List)">
+                <button id="addAchievementBtn" class="btn-secondary">+ Add Achievement</button>
+            </div>
         </div>
+        
         <div class="editor-card">
-            <div class="action-buttons"><button id="saveBtn" class="btn-primary">💾 Save All Changes</button><button id="previewBtn" class="btn-secondary">👁️ Preview</button></div>
+            <div class="action-buttons">
+                <button id="saveBtn" class="btn-primary">💾 Save All Changes</button>
+                <button id="previewBtn" class="btn-secondary">👁️ Preview My Profile</button>
+            </div>
             <div id="saveMessage" class="message"></div>
         </div>
     </div>
     
     <script>
-        const SHEETBEST_API_URL = "https://api.sheetbest.com/sheets/54f68e59-9aa4-4e67-b267-1a4241a9a9df";
+        const API_URL = "https://api.sheetbest.com/sheets/54f68e59-9aa4-4e67-b267-1a4241a9a9df";
         
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
         if (!currentUser) window.location.href = 'index.html';
-        
         document.getElementById('userNameDisplay').textContent = currentUser.fullname;
         
-        let userData = null, userIndex = -1, skills = [], projects = [], achievements = [], profilePictureBase64 = "";
+        let skills = [], projects = [], achievements = [];
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
         
         async function loadUserData() {
-            const students = await fetch(SHEETBEST_API_URL).then(r => r.json());
-            userIndex = students.findIndex(s => s.username === currentUser.username);
-            if (userIndex !== -1) {
-                userData = students[userIndex];
-                document.getElementById('editFullname').value = userData.fullname || '';
-                document.getElementById('editUsername').value = userData.username || '';
-                document.getElementById('editEmail').value = userData.email || '';
-                document.getElementById('editLocation').value = userData.location || '';
-                document.getElementById('editBio').value = userData.bio || '';
-                profilePictureBase64 = userData.profilePicture || "";
-                document.getElementById('profilePreview').src = profilePictureBase64 || "https://via.placeholder.com/120?text=Photo";
+            try {
+                const response = await fetch(API_URL);
+                const students = await response.json();
+                const user = students.find(s => s.username === currentUser.username);
                 
-                skills = userData.skills ? userData.skills.split(',').map(s => s.trim()).filter(s => s) : [];
-                projects = userData.projects ? JSON.parse(userData.projects) : [];
-                achievements = userData.achievements ? userData.achievements.split(',').map(a => a.trim()).filter(a => a) : [];
-                
-                renderSkills(); renderProjects(); renderAchievements();
-            }
+                if (user) {
+                    document.getElementById('editFullname').value = user.fullname || '';
+                    document.getElementById('editUsername').value = user.username || '';
+                    document.getElementById('editEmail').value = user.email || '';
+                    document.getElementById('editLocation').value = user.location || '';
+                    document.getElementById('editBio').value = user.bio || '';
+                    
+                    skills = user.skills ? user.skills.split(',').map(s => s.trim()).filter(s => s) : [];
+                    projects = user.projects ? JSON.parse(user.projects) : [];
+                    achievements = user.achievements ? user.achievements.split(',').map(a => a.trim()).filter(a => a) : [];
+                    
+                    renderSkills();
+                    renderProjects();
+                    renderAchievements();
+                }
+            } catch(e) { console.error(e); showMessage('Error loading data', 'error'); }
         }
         
         function renderSkills() {
             const container = document.getElementById('skillsList');
-            if (skills.length === 0) { container.innerHTML = '<p style="color:#888;">No skills added yet.</p>'; return; }
-            container.innerHTML = skills.map((s, i) => `<span class="skill-tag-editable">${escapeHtml(s)}<button class="skill-remove" data-skill-index="${i}">✕</button></span>`).join('');
-            document.querySelectorAll('[data-skill-index]').forEach(btn => btn.addEventListener('click', () => { skills.splice(parseInt(btn.dataset.skillIndex), 1); renderSkills(); }));
+            if (skills.length === 0) {
+                container.innerHTML = '<span style="color:#888;">No skills added yet.</span>';
+                return;
+            }
+            container.innerHTML = skills.map((s, i) => `<span class="skill-tag">${escapeHtml(s)}<button class="remove-btn" data-skill-index="${i}">✕</button></span>`).join('');
+            document.querySelectorAll('[data-skill-index]').forEach(btn => {
+                btn.onclick = () => { skills.splice(parseInt(btn.dataset.skillIndex), 1); renderSkills(); };
+            });
         }
         
         function renderProjects() {
             const container = document.getElementById('projectsList');
-            if (projects.length === 0) { container.innerHTML = '<p style="color:#888;">No projects added yet.</p>'; return; }
-            container.innerHTML = projects.map((p, i) => `<div class="project-item"><input type="text" class="form-input" placeholder="Project Name" value="${escapeHtml(p.name)}" data-project-name="${i}" style="margin-bottom:0.5rem;"><textarea class="form-textarea" placeholder="Project Description" data-project-desc="${i}" style="min-height:60px;">${escapeHtml(p.desc)}</textarea><button class="btn-danger" data-project-del="${i}">Remove</button></div>`).join('');
+            if (projects.length === 0) {
+                container.innerHTML = '<p style="color:#888;">No projects added yet.</p>';
+                return;
+            }
+            container.innerHTML = projects.map((p, i) => `
+                <div class="project-item">
+                    <input type="text" class="project-name" value="${escapeHtml(p.name)}" data-project-name="${i}" placeholder="Project Name">
+                    <textarea class="project-desc" data-project-desc="${i}" placeholder="Project Description">${escapeHtml(p.desc)}</textarea>
+                    <button class="btn-secondary" style="margin-top:0.5rem; background:#fee2e2; color:#dc2626;" data-project-del="${i}">Remove</button>
+                </div>
+            `).join('');
             for (let i = 0; i < projects.length; i++) {
-                document.querySelector(`[data-project-name="${i}"]`)?.addEventListener('input', (e) => projects[i].name = e.target.value);
-                document.querySelector(`[data-project-desc="${i}"]`)?.addEventListener('input', (e) => projects[i].desc = e.target.value);
-                document.querySelector(`[data-project-del="${i}"]`)?.addEventListener('click', () => { projects.splice(i,1); renderProjects(); });
+                document.querySelector(`[data-project-name="${i}"]`).oninput = (e) => projects[i].name = e.target.value;
+                document.querySelector(`[data-project-desc="${i}"]`).oninput = (e) => projects[i].desc = e.target.value;
+                document.querySelector(`[data-project-del="${i}"]`).onclick = () => { projects.splice(i, 1); renderProjects(); };
             }
         }
         
         function renderAchievements() {
             const container = document.getElementById('achievementsList');
-            if (achievements.length === 0) { container.innerHTML = '<p style="color:#888;">No achievements added yet.</p>'; return; }
-            container.innerHTML = achievements.map((a, i) => `<span class="achievement-item">🏅 ${escapeHtml(a)}<button class="achievement-remove" data-ach-index="${i}">✕</button></span>`).join('');
-            document.querySelectorAll('[data-ach-index]').forEach(btn => btn.addEventListener('click', () => { achievements.splice(parseInt(btn.dataset.achIndex),1); renderAchievements(); }));
+            if (achievements.length === 0) {
+                container.innerHTML = '<span style="color:#888;">No achievements added yet.</span>';
+                return;
+            }
+            container.innerHTML = achievements.map((a, i) => `<span class="achievement-tag">🏅 ${escapeHtml(a)}<button class="remove-btn remove-ach" data-ach-index="${i}">✕</button></span>`).join('');
+            document.querySelectorAll('[data-ach-index]').forEach(btn => {
+                btn.onclick = () => { achievements.splice(parseInt(btn.dataset.achIndex), 1); renderAchievements(); };
+            });
         }
         
         async function savePortfolio() {
@@ -396,52 +352,89 @@
             const email = document.getElementById('editEmail').value.trim();
             const location = document.getElementById('editLocation').value.trim();
             const bio = document.getElementById('editBio').value.trim();
-            if (!fullname || !email) { showMessage('❌ Name and Email are required', 'error'); return; }
+            
+            if (!fullname || !email) {
+                showMessage('❌ Name and Email are required', 'error');
+                return;
+            }
             
             const saveBtn = document.getElementById('saveBtn');
-            saveBtn.disabled = true; saveBtn.innerHTML = '💾 Saving...';
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<span class="loading-spinner"></span> Saving...';
             
             try {
-                const students = await fetch(SHEETBEST_API_URL).then(r => r.json());
+                const response = await fetch(API_URL);
+                const students = await response.json();
                 const index = students.findIndex(s => s.username === currentUser.username);
+                
                 if (index !== -1) {
-                    await fetch(`${SHEETBEST_API_URL}/${index + 1}`, {
+                    const updatedUser = {
+                        ...students[index],
+                        fullname: fullname,
+                        email: email,
+                        location: location,
+                        bio: bio,
+                        skills: skills.join(', '),
+                        projects: JSON.stringify(projects),
+                        achievements: achievements.join(', ')
+                    };
+                    
+                    const putResponse = await fetch(`${API_URL}/${index + 1}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ ...students[index], fullname, email, location, bio, skills: skills.join(', '), projects: JSON.stringify(projects), achievements: achievements.join(', '), profilePicture: profilePictureBase64 })
+                        body: JSON.stringify(updatedUser)
                     });
-                    currentUser.fullname = fullname;
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                    document.getElementById('userNameDisplay').textContent = fullname;
-                    showMessage('✅ Portfolio saved successfully!', 'success');
+                    
+                    if (putResponse.ok) {
+                        currentUser.fullname = fullname;
+                        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                        showMessage('✅ Portfolio saved successfully!', 'success');
+                        setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+                    } else {
+                        throw new Error('Save failed');
+                    }
                 }
-            } catch (error) { showMessage('❌ Error saving portfolio', 'error'); }
-            finally { saveBtn.disabled = false; saveBtn.innerHTML = '💾 Save All Changes'; }
+            } catch(e) {
+                showMessage('❌ Error saving: ' + e.message, 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '💾 Save All Changes';
+            }
         }
         
-        function showMessage(text, type) { const msg = document.getElementById('saveMessage'); msg.textContent = text; msg.className = `message ${type}`; setTimeout(() => msg.innerHTML = '', 3000); }
-        function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+        function showMessage(text, type) {
+            const msg = document.getElementById('saveMessage');
+            msg.textContent = text;
+            msg.className = `message ${type}`;
+            setTimeout(() => msg.style.display = 'none', 4000);
+        }
         
-        document.getElementById('addSkillBtn').addEventListener('click', () => { const val = document.getElementById('newSkill').value.trim(); if(val){ skills.push(val); renderSkills(); document.getElementById('newSkill').value = ''; } });
-        document.getElementById('addProjectBtn').addEventListener('click', () => { projects.push({ name: 'New Project', desc: 'Description here' }); renderProjects(); });
-        document.getElementById('addAchievementBtn').addEventListener('click', () => { const val = document.getElementById('newAchievement').value.trim(); if(val){ achievements.push(val); renderAchievements(); document.getElementById('newAchievement').value = ''; } });
-        document.getElementById('saveBtn').addEventListener('click', savePortfolio);
-        document.getElementById('previewBtn').addEventListener('click', () => window.open(`dashboard.html`, '_blank'));
-        document.getElementById('logoutBtn').addEventListener('click', () => { localStorage.removeItem('currentUser'); window.location.href = 'index.html'; });
+        document.getElementById('addSkillBtn').onclick = () => {
+            const val = document.getElementById('newSkill').value.trim();
+            if (val) { skills.push(val); renderSkills(); document.getElementById('newSkill').value = ''; }
+        };
+        document.getElementById('addProjectBtn').onclick = () => {
+            projects.push({ name: 'New Project', desc: 'Description here' });
+            renderProjects();
+        };
+        document.getElementById('addAchievementBtn').onclick = () => {
+            const val = document.getElementById('newAchievement').value.trim();
+            if (val) { achievements.push(val); renderAchievements(); document.getElementById('newAchievement').value = ''; }
+        };
+        document.getElementById('saveBtn').onclick = savePortfolio;
+        document.getElementById('previewBtn').onclick = () => window.open(`profile.html?user=${encodeURIComponent(currentUser.username)}`, '_blank');
+        document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem('currentUser'); window.location.href = 'index.html'; };
         
-        document.getElementById('profilePictureInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) { profilePictureBase64 = event.target.result; document.getElementById('profilePreview').src = profilePictureBase64; };
-                reader.readAsDataURL(file);
-            }
-        });
-        document.getElementById('removePhotoBtn').addEventListener('click', () => { profilePictureBase64 = ""; document.getElementById('profilePreview').src = "https://via.placeholder.com/120?text=Photo"; });
+        window.addEventListener('scroll', () => document.querySelector('nav').classList.toggle('scrolled', window.scrollY > 50));
         
-        window.addEventListener('scroll', function() { const nav = document.querySelector('nav'); if (window.scrollY > 50) nav.classList.add('scrolled'); else nav.classList.remove('scrolled'); });
-        const hamburger = document.querySelector('.hamburger'), navLinks = document.querySelector('.nav-links');
-        if (hamburger) hamburger.addEventListener('click', () => { hamburger.classList.toggle('active'); navLinks.classList.toggle('active'); });
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        if (hamburger) {
+            hamburger.onclick = () => {
+                hamburger.classList.toggle('active');
+                navLinks.classList.toggle('active');
+            };
+        }
         
         loadUserData();
     </script>
