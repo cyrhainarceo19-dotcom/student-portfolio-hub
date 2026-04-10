@@ -3,283 +3,328 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Student Portfolio Hub</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Student Portfolio Hub | Login</title>
     <style>
-        .auth-container {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
-            align-items: center;
             justify-content: center;
-            padding: 2rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            align-items: center;
+            padding: 1rem;
         }
-        
-        .auth-card {
+
+        .login-container {
             background: white;
             border-radius: 32px;
             padding: 2.5rem;
-            max-width: 450px;
             width: 100%;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            max-width: 450px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            animation: fadeInUp 0.6s ease;
         }
-        
-        .auth-tabs {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            border-bottom: 2px solid #f0f0f0;
-        }
-        
-        .tab-btn {
-            flex: 1;
-            padding: 0.8rem;
-            background: none;
-            border: none;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            color: #888;
-        }
-        
-        .tab-btn.active {
-            color: #667eea;
-            border-bottom: 3px solid #667eea;
-        }
-        
-        .auth-form {
-            display: none;
-        }
-        
-        .auth-form.active {
-            display: block;
-            animation: fadeScale 0.3s ease;
-        }
-        
-        @keyframes fadeScale {
+
+        @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: scale(0.98);
+                transform: translateY(30px);
             }
             to {
                 opacity: 1;
-                transform: scale(1);
+                transform: translateY(0);
             }
         }
-        
-        .auth-form h2 {
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+
+        .logo {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            margin-bottom: 0.5rem;
         }
-        
-        .auth-input {
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-input {
             width: 100%;
             padding: 0.9rem 1rem;
-            margin-bottom: 1rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
             font-size: 1rem;
-        }
-        
-        .auth-input:focus {
+            transition: all 0.3s;
             outline: none;
-            border-color: #667eea;
         }
-        
-        .auth-btn {
+
+        .form-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.2);
+        }
+
+        .btn-primary {
             width: 100%;
-            padding: 0.9rem;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 16px;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        
-        .auth-btn:hover {
+
+        .btn-primary:hover {
             transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102,126,234,0.3);
         }
-        
-        .auth-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
+
+        .btn-secondary {
+            width: 100%;
+            padding: 1rem;
+            background: #f0f0f0;
+            color: #667eea;
+            border: none;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .message {
+            margin-top: 1rem;
+            padding: 0.8rem;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .message.success {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .toggle-text {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #666;
+        }
+
+        .toggle-link {
+            color: #667eea;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .toggle-link:hover {
+            text-decoration: underline;
+        }
+
+        .register-fields {
+            display: none;
+        }
+
+        .register-fields.active {
+            display: block;
         }
     </style>
 </head>
 <body>
-    <div class="auth-container">
-        <div class="auth-card">
-            <div class="auth-tabs">
-                <button class="tab-btn active" data-tab="login">🔐 Login</button>
-                <button class="tab-btn" data-tab="signup">📝 Sign Up</button>
+    <div class="login-container">
+        <div class="logo">🎓 Student Portfolio Hub</div>
+        <div class="subtitle">Showcase your journey, connect with peers</div>
+        
+        <div id="loginForm">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="loginUsername" class="form-input" placeholder="Enter your username">
             </div>
-            
-            <div id="loginForm" class="auth-form active">
-                <h2>Welcome Back!</h2>
-                <p style="color:#666; margin-bottom:1.5rem;">Login to access your portfolio</p>
-                <input type="text" id="loginUsername" class="auth-input" placeholder="Username">
-                <input type="password" id="loginPassword" class="auth-input" placeholder="Password">
-                <button id="loginBtn" class="auth-btn">Login →</button>
-                <div id="loginMessage" class="message"></div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password">
             </div>
-            
-            <div id="signupForm" class="auth-form">
-                <h2>Create Account</h2>
-                <p style="color:#666; margin-bottom:1.5rem;">Join the student community</p>
-                <input type="text" id="signupFullname" class="auth-input" placeholder="Full Name">
-                <input type="text" id="signupUsername" class="auth-input" placeholder="Username">
-                <input type="email" id="signupEmail" class="auth-input" placeholder="Email">
-                <input type="password" id="signupPassword" class="auth-input" placeholder="Password (min 4 chars)">
-                <input type="password" id="signupConfirm" class="auth-input" placeholder="Confirm Password">
-                <button id="signupBtn" class="auth-btn">Create Account →</button>
-                <div id="signupMessage" class="message"></div>
+            <button id="loginBtn" class="btn-primary">🔐 Login</button>
+            <div class="toggle-text">Don't have an account? <span class="toggle-link" id="showRegister">Create Account</span></div>
+            <div id="loginMessage" class="message"></div>
+        </div>
+        
+        <div id="registerForm" style="display:none;">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="regFullname" class="form-input" placeholder="Your full name">
             </div>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="regUsername" class="form-input" placeholder="Choose a username">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="regEmail" class="form-input" placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="regPassword" class="form-input" placeholder="Create a password">
+            </div>
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" id="regConfirmPassword" class="form-input" placeholder="Confirm password">
+            </div>
+            <button id="registerBtn" class="btn-primary">📝 Register</button>
+            <div class="toggle-text">Already have an account? <span class="toggle-link" id="showLogin">Back to Login</span></div>
+            <div id="registerMessage" class="message"></div>
         </div>
     </div>
-    
+
     <script>
         const SHEETBEST_API_URL = "https://api.sheetbest.com/sheets/54f68e59-9aa4-4e67-b267-1a4241a9a9df";
         
-        function showMessage(element, text, type) {
-            element.textContent = text;
-            element.className = `message ${type}`;
-            setTimeout(() => {
-                element.style.display = 'none';
-            }, 4000);
+        // Show/Hide forms
+        document.getElementById('showRegister').addEventListener('click', () => {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        });
+        
+        document.getElementById('showLogin').addEventListener('click', () => {
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+            clearMessages();
+        });
+        
+        function clearMessages() {
+            document.getElementById('loginMessage').innerHTML = '';
+            document.getElementById('registerMessage').innerHTML = '';
         }
         
-        async function getAllStudents() {
-            const response = await fetch(SHEETBEST_API_URL);
-            return await response.json();
-        }
-        
-        async function addStudent(data) {
-            const response = await fetch(SHEETBEST_API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            return await response.json();
-        }
-        
-        async function handleSignup() {
-            const fullname = document.getElementById('signupFullname').value.trim();
-            const username = document.getElementById('signupUsername').value.trim();
-            const email = document.getElementById('signupEmail').value.trim();
-            const password = document.getElementById('signupPassword').value;
-            const confirm = document.getElementById('signupConfirm').value;
-            
-            if (!fullname || !username || !email || !password) {
-                showMessage(document.getElementById('signupMessage'), '❌ Please fill all fields', 'error');
-                return;
-            }
-            if (password !== confirm) {
-                showMessage(document.getElementById('signupMessage'), '❌ Passwords do not match', 'error');
-                return;
-            }
-            if (password.length < 4) {
-                showMessage(document.getElementById('signupMessage'), '❌ Password must be at least 4 characters', 'error');
-                return;
-            }
-            
-            const signupBtn = document.getElementById('signupBtn');
-            signupBtn.disabled = true;
-            signupBtn.innerHTML = '<span class="loading-spinner"></span> Creating...';
-            
-            try {
-                const students = await getAllStudents();
-                if (students.some(s => s.username === username)) {
-                    showMessage(document.getElementById('signupMessage'), '❌ Username already exists', 'error');
-                    return;
-                }
-                if (students.some(s => s.email === email)) {
-                    showMessage(document.getElementById('signupMessage'), '❌ Email already registered', 'error');
-                    return;
-                }
-                
-                const now = new Date();
-                await addStudent({
-                    fullname, username, email, password,
-                    createdAt: now.toLocaleString(),
-                    avatar: fullname.charAt(0).toUpperCase(),
-                    profilePicture: "",
-                    bio: "Hello! I'm a student passionate about technology.",
-                    location: "",
-                    skills: "",
-                    projects: "[]",
-                    achievements: ""
-                });
-                
-                showMessage(document.getElementById('signupMessage'), '✅ Account created! Please login.', 'success');
-                setTimeout(() => {
-                    document.querySelector('[data-tab="login"]').click();
-                    document.getElementById('loginUsername').value = username;
-                }, 1500);
-            } catch (error) {
-                showMessage(document.getElementById('signupMessage'), '❌ Error creating account', 'error');
-            } finally {
-                signupBtn.disabled = false;
-                signupBtn.innerHTML = 'Create Account →';
-            }
-        }
-        
-        async function handleLogin() {
+        // LOGIN
+        document.getElementById('loginBtn').addEventListener('click', async () => {
             const username = document.getElementById('loginUsername').value.trim();
-            const password = document.getElementById('loginPassword').value;
+            const password = document.getElementById('loginPassword').value.trim();
+            const msgDiv = document.getElementById('loginMessage');
             
             if (!username || !password) {
-                showMessage(document.getElementById('loginMessage'), '❌ Enter username and password', 'error');
+                msgDiv.innerHTML = '<div class="message error">❌ Please enter username and password</div>';
                 return;
             }
             
-            const loginBtn = document.getElementById('loginBtn');
-            loginBtn.disabled = true;
-            loginBtn.innerHTML = '<span class="loading-spinner"></span> Logging in...';
-            
             try {
-                const students = await getAllStudents();
-                const user = students.find(s => s.username === username && s.password === password);
+                const response = await fetch(SHEETBEST_API_URL);
+                const users = await response.json();
+                const user = users.find(u => u.username === username && u.password === password);
                 
                 if (user) {
                     localStorage.setItem('currentUser', JSON.stringify({
-                        id: user.id || user.username,
-                        fullname: user.fullname,
                         username: user.username,
-                        email: user.email,
-                        profilePicture: user.profilePicture || ""
+                        fullname: user.fullname,
+                        email: user.email
                     }));
                     window.location.href = 'dashboard.html';
                 } else {
-                    showMessage(document.getElementById('loginMessage'), '❌ Invalid username or password', 'error');
+                    msgDiv.innerHTML = '<div class="message error">❌ Invalid username or password</div>';
                 }
             } catch (error) {
-                showMessage(document.getElementById('loginMessage'), '❌ Connection error', 'error');
-            } finally {
-                loginBtn.disabled = false;
-                loginBtn.innerHTML = 'Login →';
+                msgDiv.innerHTML = '<div class="message error">❌ Connection error. Please try again.</div>';
             }
-        }
-        
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const tab = btn.dataset.tab;
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                document.getElementById('loginForm').classList.toggle('active', tab === 'login');
-                document.getElementById('signupForm').classList.toggle('active', tab === 'signup');
-            });
         });
         
-        document.getElementById('loginBtn').addEventListener('click', handleLogin);
-        document.getElementById('signupBtn').addEventListener('click', handleSignup);
-        
-        document.getElementById('loginPassword').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handleLogin();
+        // REGISTER
+        document.getElementById('registerBtn').addEventListener('click', async () => {
+            const fullname = document.getElementById('regFullname').value.trim();
+            const username = document.getElementById('regUsername').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+            const confirmPassword = document.getElementById('regConfirmPassword').value.trim();
+            const msgDiv = document.getElementById('registerMessage');
+            
+            if (!fullname || !username || !email || !password) {
+                msgDiv.innerHTML = '<div class="message error">❌ Please fill all fields</div>';
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                msgDiv.innerHTML = '<div class="message error">❌ Passwords do not match</div>';
+                return;
+            }
+            
+            if (!email.includes('@')) {
+                msgDiv.innerHTML = '<div class="message error">❌ Please enter a valid email</div>';
+                return;
+            }
+            
+            try {
+                const response = await fetch(SHEETBEST_API_URL);
+                const users = await response.json();
+                
+                if (users.find(u => u.username === username)) {
+                    msgDiv.innerHTML = '<div class="message error">❌ Username already exists</div>';
+                    return;
+                }
+                
+                const newUser = {
+                    fullname: fullname,
+                    username: username,
+                    email: email,
+                    password: password,
+                    location: '',
+                    bio: '',
+                    skills: '',
+                    projects: '[]',
+                    achievements: '',
+                    profilePicture: '',
+                    createdAt: new Date().toLocaleDateString()
+                };
+                
+                await fetch(SHEETBEST_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newUser)
+                });
+                
+                msgDiv.innerHTML = '<div class="message success">✅ Registration successful! Please login.</div>';
+                setTimeout(() => {
+                    document.getElementById('registerForm').style.display = 'none';
+                    document.getElementById('loginForm').style.display = 'block';
+                    clearMessages();
+                }, 1500);
+                
+            } catch (error) {
+                msgDiv.innerHTML = '<div class="message error">❌ Registration failed. Please try again.</div>';
+            }
         });
     </script>
 </body>
