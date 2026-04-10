@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portfolio | Sign Up & Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .auth-container {
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+        }
+
+        .auth-tabs {
+            display: flex;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 1.2rem;
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            background: #f8f9ff;
+        }
+
+        .auth-form {
+            padding: 2rem;
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .auth-form h2 {
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .auth-form p {
+            color: #666;
+            margin-bottom: 1.8rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .auth-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.2);
+        }
+
+        .auth-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.9rem;
+            width: 100%;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .auth-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .message {
+            margin-top: 1rem;
+            padding: 0.8rem;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #dc2626;
+            display: block;
+        }
+
+        .message.success {
+            background: #dcfce7;
+            color: #16a34a;
+            display: block;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .dashboard-container {
+            display: none;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .dashboard-header {
+            background: white;
+            border-radius: 20px;
+            padding: 1rem 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .dashboard-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .user-badge {
+            background: #f0eef7;
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 500;
+            color: #5a4fcf;
+        }
+
+        .logout-dash-btn {
+            background: #fee2e2;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #dc2626;
+        }
+
+        .welcome-message {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .student-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .student-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            margin: 0 auto 1rem;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="authContainer" class="auth-container">
+    <div class="auth-tabs">
+        <button class="tab-btn active" data-tab="login">🔐 Login</button>
+        <button class="tab-btn" data-tab="signup">📝 Sign Up</button>
+    </div>
+
+    <div id="loginForm" class="auth-form active">
+        <h2>Welcome Back!</h2>
+        <p>Login to access your student portfolio</p>
+        <div class="input-group">
+            <label>Username</label>
+            <input type="text" id="loginUsername" class="auth-input" placeholder="Enter your username">
+        </div>
+        <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="loginPassword" class="auth-input" placeholder="Enter your password">
+        </div>
+        <button id="loginBtn" class="auth-btn">Login →</button>
+        <div id="loginMessage" class="message"></div>
+    </div>
+
+    <div id="signupForm" class="auth-form">
+        <h2>Create Account</h2>
+        <p>Join our student portfolio community</p>
+        <div class="input-group">
+            <label>Full Name</label>
+            <input type="text" id="signupFullname" class="auth-input" placeholder="Your full name">
+        </div>
+        <div class="input-group">
+            <label>Username</label>
+            <input type="text" id="signupUsername" class="auth-input" placeholder="Choose a username">
+        </div>
+        <div class="input-group">
+            <label>Email</label>
+            <input type="email" id="signupEmail" class="auth-input" placeholder="your@email.com">
+        </div>
+        <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="signupPassword" class="auth-input" placeholder="Create a password">
+        </div>
+        <div class="input-group">
+            <label>Confirm Password</label>
+            <input type="password" id="signupConfirm" class="auth-input" placeholder="Confirm your password">
+        </div>
+        <button id="signupBtn" class="auth-btn">Create Account →</button>
+        <div id="signupMessage" class="message"></div>
+    </div>
+</div>
+
+<div id="dashboardContainer" class="dashboard-container">
+    <div class="dashboard-header">
+        <div class="dashboard-logo">🎓 Student Portfolio Hub</div>
+        <div>
+            <span class="user-badge" id="dashboardUserName"></span>
+            <button id="dashboardLogoutBtn" class="logout-dash-btn">Logout</button>
+        </div>
+    </div>
+    <div class="welcome-message" id="welcomeMessage"></div>
+    <div class="students-grid" id="studentsGrid"></div>
+</div>
+
+<script>
+    // ✅ YOUR API URL IS ALREADY INSERTED HERE ✅
+    const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbxXGFt5zbz58r7Y_yMdQfzCS2K2R7pbeC_pqi8zQnr0ZMiCVlK7xg5KbSzENQ1SPwGZ/exec";
+    
+    const authContainer = document.getElementById('authContainer');
+    const dashboardContainer = document.getElementById('dashboardContainer');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const signupBtn = document.getElementById('signupBtn');
+    const dashboardLogoutBtn = document.getElementById('dashboardLogoutBtn');
+    const dashboardUserName = document.getElementById('dashboardUserName');
+    const welcomeMessageDiv = document.getElementById('welcomeMessage');
+    const studentsGrid = document.getElementById('studentsGrid');
+    
+    let currentUser = null;
+    
+    function showMessage(element, text, type) {
+        element.textContent = text;
+        element.className = `message ${type}`;
+        setTimeout(() => {
+            element.style.display = 'none';
+        }, 4000);
+    }
+    
+    async function callAPI(action, data) {
+        try {
+            const response = await fetch(GOOGLE_SHEET_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action, ...data })
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('API Error:', error);
+            return { success: false, message: 'Connection error. Make sure Apps Script is deployed with "Anyone" access.' };
+        }
+    }
+    
+    async function handleSignup() {
+        const fullname = document.getElementById('signupFullname').value.trim();
+        const username = document.getElementById('signupUsername').value.trim();
+        const email = document.getElementById('signupEmail').value.trim();
+        const password = document.getElementById('signupPassword').value;
+        const confirm = document.getElementById('signupConfirm').value;
+        
+        if (!fullname || !username || !email || !password) {
+            showMessage(document.getElementById('signupMessage'), '❌ Please fill in all fields', 'error');
+            return;
+        }
+        
+        if (password !== confirm) {
+            showMessage(document.getElementById('signupMessage'), '❌ Passwords do not match', 'error');
+            return;
+        }
+        
+        signupBtn.disabled = true;
+        signupBtn.innerHTML = '<span class="loading-spinner"></span> Creating account...';
+        
+        const result = await callAPI('signup', { fullname, username, email, password });
+        
+        if (result.success) {
+            showMessage(document.getElementById('signupMessage'), '✅ ' + result.message, 'success');
+            document.getElementById('signupFullname').value = '';
+            document.getElementById('signupUsername').value = '';
+            document.getElementById('signupEmail').value = '';
+            document.getElementById('signupPassword').value = '';
+            document.getElementById('signupConfirm').value = '';
+            setTimeout(() => {
+                document.querySelector('.tab-btn[data-tab="login"]').click();
+            }, 1500);
+        } else {
+            showMessage(document.getElementById('signupMessage'), '❌ ' + result.message, 'error');
+        }
+        
+        signupBtn.disabled = false;
+        signupBtn.innerHTML = 'Create Account →';
+    }
+    
+    async function handleLogin() {
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        
+        if (!username || !password) {
+            showMessage(document.getElementById('loginMessage'), '❌ Please enter username and password', 'error');
+            return;
+        }
+        
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<span class="loading-spinner"></span> Logging in...';
+        
+        const result = await callAPI('login', { username, password });
+        
+        if (result.success) {
+            currentUser = result.user;
+            localStorage.setItem('studentUser', JSON.stringify(currentUser));
+            showDashboard();
+        } else {
+            showMessage(document.getElementById('loginMessage'), '❌ ' + result.message, 'error');
+        }
+        
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = 'Login →';
+    }
+    
+    async function loadAllStudents() {
+        studentsGrid.innerHTML = '<div style="text-align:center; padding:2rem; background:white; border-radius:20px;">Loading students...</div>';
+        
+        const result = await callAPI('getAllStudents', {});
+        
+        if (result.success && result.students.length > 0) {
+            studentsGrid.innerHTML = '';
+            result.students.forEach(student => {
+                const card = document.createElement('div');
+                card.className = 'student-card';
+                card.innerHTML = `
+                    <div class="student-avatar">${student.avatar}</div>
+                    <h3>${escapeHtml(student.fullname)}</h3>
+                    <p style="color:#666;">@${escapeHtml(student.username)}</p>
+                    <p style="color:#888; font-size:0.8rem;">📧 ${escapeHtml(student.email)}</p>
+                `;
+                studentsGrid.appendChild(card);
+            });
+        } else {
+            studentsGrid.innerHTML = '<div style="text-align:center; padding:2rem; background:white; border-radius:20px;">✨ No other students yet. Be the first! ✨</div>';
+        }
+    }
+    
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    function showDashboard() {
+        authContainer.style.display = 'none';
+        dashboardContainer.style.display = 'block';
+        document.body.style.background = '#f0f2f5';
+        
+        dashboardUserName.textContent = currentUser.fullname;
+        welcomeMessageDiv.innerHTML = `<h2>🎉 Welcome, ${escapeHtml(currentUser.fullname)}!</h2><p style="color:#666;">View fellow students below.</p>`;
+        
+        loadAllStudents();
+    }
+    
+    function logout() {
+        localStorage.removeItem('studentUser');
+        currentUser = null;
+        authContainer.style.display = 'block';
+        dashboardContainer.style.display = 'none';
+        document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+        document.getElementById('loginUsername').value = '';
+        document.getElementById('loginPassword').value = '';
+    }
+    
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tab = btn.getAttribute('data-tab');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            if (tab === 'login') {
+                loginForm.classList.add('active');
+                signupForm.classList.remove('active');
+            } else {
+                signupForm.classList.add('active');
+                loginForm.classList.remove('active');
+            }
+        });
+    });
+    
+    loginBtn.addEventListener('click', handleLogin);
+    signupBtn.addEventListener('click', handleSignup);
+    dashboardLogoutBtn.addEventListener('click', logout);
+    
+    document.getElementById('loginPassword').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleLogin();
+    });
+    
+    const savedUser = localStorage.getItem('studentUser');
+    if (savedUser) {
+        try {
+            currentUser = JSON.parse(savedUser);
+            showDashboard();
+        } catch(e) {
+            logout();
+        }
+    }
+</script>
+</body>
+</html>
