@@ -4,13 +4,142 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Portfolio | Student Portfolio Hub</title>
-    <link rel="stylesheet" href="style.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            background: #f5f7fb;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+        }
+
+        nav.scrolled {
+            padding: 0.7rem 0;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #2d2d2d;
+            font-weight: 500;
+        }
+
+        .user-badge {
+            background: #f0eef7;
+            padding: 0.4rem 1rem;
+            border-radius: 30px;
+            color: #5a4fcf;
+        }
+
+        .btn-logout {
+            background: #fee2e2;
+            border: none;
+            padding: 0.4rem 1.2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            color: #dc2626;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #2d2d2d;
+            transition: 0.3s;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 6rem 2rem 2rem;
+        }
+
+        .editor-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .editor-title {
+            font-size: 1.3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            border-color: #667eea;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
         .profile-picture-section {
             text-align: center;
-            margin-bottom: 1.5rem;
         }
-        
+
         .profile-preview {
             width: 120px;
             height: 120px;
@@ -19,74 +148,15 @@
             border: 4px solid #667eea;
             margin-bottom: 1rem;
         }
-        
+
         .upload-btn {
             background: #e2e8f0;
-            color: #4a5568;
             padding: 0.5rem 1rem;
             border-radius: 30px;
             cursor: pointer;
             display: inline-block;
-            font-size: 0.85rem;
         }
-        
-        .upload-btn:hover {
-            background: #cbd5e1;
-        }
-        
-        .skills-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        .skill-tag-editable {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 0.4rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-        }
-        
-        .skill-remove, .achievement-remove {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            cursor: pointer;
-            font-size: 1rem;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .add-skill {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-        }
-        
-        .add-skill input {
-            flex: 1;
-            padding: 0.6rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-        }
-        
-        .project-item {
-            background: #f8fafc;
-            padding: 1rem;
-            border-radius: 12px;
-            margin-bottom: 1rem;
-            border-left: 4px solid #667eea;
-        }
-        
+
         .btn-danger {
             background: #fee2e2;
             color: #dc2626;
@@ -94,59 +164,136 @@
             padding: 0.3rem 0.8rem;
             border-radius: 20px;
             cursor: pointer;
-            font-size: 0.75rem;
         }
-        
-        .achievement-item {
+
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .skill-tag-editable {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+        }
+
+        .skill-remove, .achievement-remove {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+        }
+
+        .add-skill {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .add-skill input {
+            flex: 1;
+            padding: 0.6rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            padding: 0.6rem 1rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .project-item {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .achievement-item {
             background: #fef3c7;
             padding: 0.4rem 0.8rem;
             border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
             margin: 0.2rem;
-            font-size: 0.85rem;
         }
-        
+
         .action-buttons {
             display: flex;
             gap: 1rem;
-            margin-top: 1.5rem;
         }
-        
-        .editor-card {
-            background: white;
-            border-radius: 24px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+
+        .message {
+            margin-top: 1rem;
+            padding: 0.8rem;
+            border-radius: 12px;
         }
-        
-        .editor-title {
-            font-size: 1.3rem;
-            color: #667eea;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid #f0f0f0;
+
+        .message.success {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                left: -100%;
+                top: 70px;
+                flex-direction: column;
+                background: white;
+                width: 100%;
+                transition: 0.3s;
+                padding: 2rem;
+            }
+            .nav-links.active {
+                left: 0;
+            }
+            .hamburger {
+                display: flex;
+            }
         }
     </style>
 </head>
 <body>
     <nav>
         <div class="nav-container">
-            <div class="logo">✏️ Edit My Portfolio</div>
+            <div class="logo">✏️ Edit Portfolio</div>
             <ul class="nav-links">
                 <li><a href="dashboard.html">🏠 Home</a></li>
-                <li><a href="editor.html">✏️ Edit Portfolio</a></li>
-                <li><a href="messaging.html">💬 Messages</a></li>
+                <li><a href="editor.html">✏️ Edit</a></li>
+                <li><a href="students.html">👥 Students</a></li>
                 <li><span class="user-badge" id="userNameDisplay"></span></li>
                 <li><button id="logoutBtn" class="btn-logout">🚪 Logout</button></li>
             </ul>
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+            <div class="hamburger"><span></span><span></span><span></span></div>
         </div>
     </nav>
     
@@ -154,45 +301,36 @@
         <div class="editor-card">
             <div class="editor-title">📸 Profile Picture</div>
             <div class="profile-picture-section">
-                <img id="profilePreview" class="profile-preview" src="" alt="Profile Preview">
-                <div>
-                    <label class="upload-btn">📷 Upload Photo
-                        <input type="file" id="profilePictureInput" accept="image/*" style="display:none;">
-                    </label>
-                    <button id="removePhotoBtn" class="btn-danger" style="margin-left:0.5rem;">Remove</button>
-                </div>
+                <img id="profilePreview" class="profile-preview" src="https://via.placeholder.com/120?text=Photo">
+                <div><label class="upload-btn">📷 Upload<input type="file" id="profilePictureInput" accept="image/*" style="display:none;"></label>
+                <button id="removePhotoBtn" class="btn-danger">Remove</button></div>
             </div>
         </div>
-        
         <div class="editor-card">
-            <div class="editor-title">📝 Basic Information</div>
-            <div class="form-group"><label>Full Name</label><input type="text" id="editFullname" class="form-input"></div>
-            <div class="form-group"><label>Username</label><input type="text" id="editUsername" class="form-input" disabled style="background:#f5f5f5;"></div>
-            <div class="form-group"><label>Email</label><input type="email" id="editEmail" class="form-input"></div>
-            <div class="form-group"><label>Location</label><input type="text" id="editLocation" class="form-input" placeholder="e.g., Manila, Philippines"></div>
-            <div class="form-group"><label>Bio / About Me</label><textarea id="editBio" class="form-textarea" placeholder="Tell us about yourself..."></textarea></div>
+            <div class="editor-title">📝 Basic Info</div>
+            <div class="form-group"><input type="text" id="editFullname" class="form-input" placeholder="Full Name"></div>
+            <div class="form-group"><input type="text" id="editUsername" class="form-input" disabled placeholder="Username"></div>
+            <div class="form-group"><input type="email" id="editEmail" class="form-input" placeholder="Email"></div>
+            <div class="form-group"><input type="text" id="editLocation" class="form-input" placeholder="Location"></div>
+            <div class="form-group"><textarea id="editBio" class="form-textarea" placeholder="Bio"></textarea></div>
         </div>
-        
         <div class="editor-card">
             <div class="editor-title">🛠️ Skills</div>
             <div id="skillsList" class="skills-container"></div>
-            <div class="add-skill"><input type="text" id="newSkill" placeholder="Add a skill"><button id="addSkillBtn" class="btn-secondary">+ Add</button></div>
+            <div class="add-skill"><input type="text" id="newSkill" placeholder="Add skill"><button id="addSkillBtn" class="btn-secondary">+ Add</button></div>
         </div>
-        
         <div class="editor-card">
             <div class="editor-title">🚀 Projects</div>
             <div id="projectsList"></div>
             <button id="addProjectBtn" class="btn-secondary">+ Add New Project</button>
         </div>
-        
         <div class="editor-card">
             <div class="editor-title">🏆 Achievements</div>
             <div id="achievementsList" class="skills-container"></div>
-            <div class="add-skill"><input type="text" id="newAchievement" placeholder="Add an achievement"><button id="addAchievementBtn" class="btn-secondary">+ Add</button></div>
+            <div class="add-skill"><input type="text" id="newAchievement" placeholder="Add achievement"><button id="addAchievementBtn" class="btn-secondary">+ Add</button></div>
         </div>
-        
         <div class="editor-card">
-            <div class="action-buttons"><button id="saveBtn" class="btn-primary">💾 Save All Changes</button><button id="previewBtn" class="btn-secondary">👁️ Preview My Portfolio</button></div>
+            <div class="action-buttons"><button id="saveBtn" class="btn-primary">💾 Save All Changes</button><button id="previewBtn" class="btn-secondary">👁️ Preview</button></div>
             <div id="saveMessage" class="message"></div>
         </div>
     </div>
@@ -261,7 +399,7 @@
             if (!fullname || !email) { showMessage('❌ Name and Email are required', 'error'); return; }
             
             const saveBtn = document.getElementById('saveBtn');
-            saveBtn.disabled = true; saveBtn.innerHTML = '<span class="loading-spinner"></span> Saving...';
+            saveBtn.disabled = true; saveBtn.innerHTML = '💾 Saving...';
             
             try {
                 const students = await fetch(SHEETBEST_API_URL).then(r => r.json());
@@ -281,14 +419,14 @@
             finally { saveBtn.disabled = false; saveBtn.innerHTML = '💾 Save All Changes'; }
         }
         
-        function showMessage(text, type) { const msg = document.getElementById('saveMessage'); msg.textContent = text; msg.className = `message ${type}`; setTimeout(() => msg.style.display = 'none', 4000); }
+        function showMessage(text, type) { const msg = document.getElementById('saveMessage'); msg.textContent = text; msg.className = `message ${type}`; setTimeout(() => msg.innerHTML = '', 3000); }
         function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
         
         document.getElementById('addSkillBtn').addEventListener('click', () => { const val = document.getElementById('newSkill').value.trim(); if(val){ skills.push(val); renderSkills(); document.getElementById('newSkill').value = ''; } });
         document.getElementById('addProjectBtn').addEventListener('click', () => { projects.push({ name: 'New Project', desc: 'Description here' }); renderProjects(); });
         document.getElementById('addAchievementBtn').addEventListener('click', () => { const val = document.getElementById('newAchievement').value.trim(); if(val){ achievements.push(val); renderAchievements(); document.getElementById('newAchievement').value = ''; } });
         document.getElementById('saveBtn').addEventListener('click', savePortfolio);
-        document.getElementById('previewBtn').addEventListener('click', () => window.open(`profile.html?user=${encodeURIComponent(currentUser.username)}`, '_blank'));
+        document.getElementById('previewBtn').addEventListener('click', () => window.open(`dashboard.html`, '_blank'));
         document.getElementById('logoutBtn').addEventListener('click', () => { localStorage.removeItem('currentUser'); window.location.href = 'index.html'; });
         
         document.getElementById('profilePictureInput').addEventListener('change', function(e) {
@@ -301,7 +439,6 @@
         });
         document.getElementById('removePhotoBtn').addEventListener('click', () => { profilePictureBase64 = ""; document.getElementById('profilePreview').src = "https://via.placeholder.com/120?text=Photo"; });
         
-        // Navbar scroll and mobile menu
         window.addEventListener('scroll', function() { const nav = document.querySelector('nav'); if (window.scrollY > 50) nav.classList.add('scrolled'); else nav.classList.remove('scrolled'); });
         const hamburger = document.querySelector('.hamburger'), navLinks = document.querySelector('.nav-links');
         if (hamburger) hamburger.addEventListener('click', () => { hamburger.classList.toggle('active'); navLinks.classList.toggle('active'); });
