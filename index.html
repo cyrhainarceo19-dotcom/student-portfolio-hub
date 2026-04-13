@@ -30,6 +30,7 @@
             box-shadow: 0 25px 50px rgba(0,0,0,0.3);
         }
 
+        
         .auth-tabs {
             display: flex;
             gap: 1rem;
@@ -180,7 +181,8 @@
             <input type="password" id="signupPassword" class="auth-input" placeholder="Password (min 4 chars)">
             <input type="password" id="signupConfirm" class="auth-input" placeholder="Confirm Password">
             <label style="display:flex; gap:8px; margin-bottom:1rem; font-size:0.9rem;">
-    <input type="checkbox" id="termsCheckbox">
+    
+                <input type="checkbox" id="termsCheckbox">
     <span>
         I agree to the 
         <a href="#" id="openTerms" style="color:#667eea; font-weight:600;">
@@ -271,6 +273,13 @@
                 return;
             }
             if (password.length < 4) {
+                // ✅ Terms validation
+const termsChecked = document.getElementById('termsCheckbox').checked;
+
+if (!termsChecked) {
+    showMessage(document.getElementById('signupMessage'), '❌ You must agree to the Terms and Conditions', 'error');
+    return;
+}
                 showMessage(document.getElementById('signupMessage'), '❌ Password must be at least 4 characters', 'error');
                 return;
             }
