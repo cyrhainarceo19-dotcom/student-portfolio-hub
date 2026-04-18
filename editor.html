@@ -347,60 +347,62 @@
             });
         }
         
-        async function savePortfolio() {
-            const fullname = document.getElementById('editFullname').value.trim();
-            const email = document.getElementById('editEmail').value.trim();
-            const location = document.getElementById('editLocation').value.trim();
-            const bio = document.getElementById('editBio').value.trim();
+async function savePortfolio() {
+    const fullname = document.getElementById('editFullname').value.trim();
+    const email = document.getElementById('editEmail').value.trim();
+    const location = document.getElementById('editLocation').value.trim();
+    const bio = document.getElementById('editBio').value.trim();
+    
+    if (!fullname || !email) {
+        showMessage('❌ Name and Email are required', 'error');
+        return;
+    }
+    
+    const saveBtn = document.getElementById('saveBtn');
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<span class="loading-spinner"></span> Saving...';
+    
+    try {
+        const response = await fetch(API_URL);
+        const students = await response.json();
+        const userToUpdate = students.find(s => s.username === currentUser.username);
+        
+        if (userToUpdate && userToUpdate.id) {
+            const updatedUser = {
+                ...userToUpdate,
+                fullname: fullname,
+                email: email,
+                location: location,
+                bio: bio,
+                skills: skills.join(', '),
+                projects: JSON.stringify(projects),
+                achievements: achievements.join(', ')
+            };
             
-            if (!fullname || !email) {
-                showMessage('❌ Name and Email are required', 'error');
-                return;
+            const putResponse = await fetch(`${API_URL}/${userToUpdate.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedUser)
+            });
+            
+            if (putResponse.ok) {
+                currentUser.fullname = fullname;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                showMessage('✅ Portfolio saved successfully!', 'success');
+                setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+            } else {
+                throw new Error('Save failed');
             }
-            
-            const saveBtn = document.getElementById('saveBtn');
-            saveBtn.disabled = true;
-            saveBtn.innerHTML = '<span class="loading-spinner"></span> Saving...';
-            
-            try {
-                const response = await fetch(API_URL);
-                const students = await response.json();
-                const index = students.findIndex(s => s.username === currentUser.username);
-                
-                if (index !== -1) {
-                    const updatedUser = {
-                        ...students[index],
-                        fullname: fullname,
-                        email: email,
-                        location: location,
-                        bio: bio,
-                        skills: skills.join(', '),
-                        projects: JSON.stringify(projects),
-                        achievements: achievements.join(', ')
-                    };
-                    
-                    const putResponse = await fetch(`${API_URL}/${index + 1}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(updatedUser)
-                    });
-                    
-                    if (putResponse.ok) {
-                        currentUser.fullname = fullname;
-                        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                        showMessage('✅ Portfolio saved successfully!', 'success');
-                        setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
-                    } else {
-                        throw new Error('Save failed');
-                    }
-                }
-            } catch(e) {
-                showMessage('❌ Error saving: ' + e.message, 'error');
-            } finally {
-                saveBtn.disabled = false;
-                saveBtn.innerHTML = '💾 Save All Changes';
-            }
+        } else {
+            throw new Error('User not found or missing ID');
         }
+    } catch(e) {
+        showMessage('❌ Error saving: ' + e.message, 'error');
+    } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '💾 Save All Changes';
+    }
+}
         
         function showMessage(text, type) {
             const msg = document.getElementById('saveMessage');
@@ -421,7 +423,7 @@
             const val = document.getElementById('newAchievement').value.trim();
             if (val) { achievements.push(val); renderAchievements(); document.getElementById('newAchievement').value = ''; }
         };
-        document.getElementById('saveBtn').onclick = savePortfolio;
+        document.getElementById('saveBtn').onclick = savex;
         document.getElementById('previewBtn').onclick = () => window.open(`profile.html?user=${encodeURIComponent(currentUser.username)}`, '_blank');
         document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem('currentUser'); window.location.href = 'index.html'; };
         
