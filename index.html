@@ -154,7 +154,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -229,7 +228,7 @@
         <div id="loginForm" class="auth-form active">
             <h2>Welcome Back!</h2>
             <p>Login to access your portfolio</p>
-            <input type="text" id="loginUsername" class="auth-input" placeholder="Username">
+            <input type="text" id="loginUsername" class="auth-input" placeholder="Username or Email">
             <input type="password" id="loginPassword" class="auth-input" placeholder="Password">
             <button id="loginBtn" class="auth-btn">Login →</button>
             <div id="loginMessage" class="message"></div>
@@ -241,7 +240,7 @@
             <input type="text" id="signupFullname" class="auth-input" placeholder="Full Name">
             <input type="text" id="signupUsername" class="auth-input" placeholder="Username">
             <input type="email" id="signupEmail" class="auth-input" placeholder="Email">
-            <input type="password" id="signupPassword" class="auth-input" placeholder="Password (min 4 chars)">
+            <input type="password" id="signupPassword" class="auth-input" placeholder="Password (min 6 chars)">
             <input type="password" id="signupConfirm" class="auth-input" placeholder="Confirm Password">
             <label style="display:flex; gap:8px; margin-bottom:1rem; font-size:0.9rem;">
                 <input type="checkbox" id="termsCheckbox">
@@ -292,7 +291,34 @@
     </div>
 
     <script>
-        const SHEETBEST_API_URL = "https://api.sheetbest.com/sheets/54f68e59-9aa4-4e67-b267-1a4241a9a9df";
+        // IMPORTANT: I-replace ito ng URL ng iyong Google Apps Script Web App URL
+        const SCRIPT_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
+        
+        async function callApi(action, data = {}) {
+            const payload = { action, ...data };
+            
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Para sa Google Apps Script
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                // Dahil sa no-cors, kailangan ng alternative approach
+                // Gumamit tayo ng JSONP style or fetch with cors
+                const proxyResponse = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                return await proxyResponse.json();
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
         
         function showMessage(element, text, type) {
             element.textContent = text;
@@ -301,20 +327,6 @@
             setTimeout(() => {
                 element.style.display = 'none';
             }, 4000);
-        }
-        
-        async function getAllStudents() {
-            const response = await fetch(SHEETBEST_API_URL);
-            return await response.json();
-        }
-        
-        async function addStudent(data) {
-            const response = await fetch(SHEETBEST_API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            return await response.json();
         }
         
         async function handleSignup() {
@@ -333,50 +345,33 @@
                 showMessage(document.getElementById('signupMessage'), '❌ Passwords do not match', 'error');
                 return;
             }
-            if (password.length < 4) {
-                showMessage(document.getElementById('signupMessage'), '❌ Password must be at least 4 characters', 'error');
+            if (password.length < 6) {
+                showMessage(document.getElementById('signupMessage'), '❌ Password must be at least 6 characters', 'error');
                 return;
             }
             if (!termsChecked) {
                 showMessage(document.getElementById('signupMessage'), '❌ You must agree to the Terms and Conditions', 'error');
                 return;
             }
-
+            
             const signupBtn = document.getElementById('signupBtn');
             signupBtn.disabled = true;
             signupBtn.innerHTML = '<span class="loading-spinner"></span> Creating...';
             
             try {
-                const students = await getAllStudents();
-                if (students.some(s => s.username === username)) {
-                    showMessage(document.getElementById('signupMessage'), '❌ Username already exists', 'error');
-                    return;
-                }
-                if (students.some(s => s.email === email)) {
-                    showMessage(document.getElementById('signupMessage'), '❌ Email already registered', 'error');
-                    return;
-                }
+                const result = await callApi('signup', { fullname, username, email, password });
                 
-                const now = new Date();
-                await addStudent({
-                    fullname, username, email, password,
-                    createdAt: now.toLocaleString(),
-                    avatar: fullname.charAt(0).toUpperCase(),
-                    bio: "Hello! I'm a student passionate about technology.",
-                    skills: "",
-                    projects: "[]",
-                    achievements: "",
-                    location: "",
-                    profilePicture: ""
-                });
-                
-                showMessage(document.getElementById('signupMessage'), '✅ Account created! Please login.', 'success');
-                setTimeout(() => {
-                    document.querySelector('[data-tab="login"]').click();
-                    document.getElementById('loginUsername').value = username;
-                }, 1500);
+                if (result.success) {
+                    showMessage(document.getElementById('signupMessage'), '✅ Account created! Please login.', 'success');
+                    setTimeout(() => {
+                        document.querySelector('[data-tab="login"]').click();
+                        document.getElementById('loginUsername').value = username;
+                    }, 1500);
+                } else {
+                    showMessage(document.getElementById('signupMessage'), '❌ ' + result.message, 'error');
+                }
             } catch (error) {
-                showMessage(document.getElementById('signupMessage'), '❌ Error creating account', 'error');
+                showMessage(document.getElementById('signupMessage'), '❌ Connection error: ' + error.message, 'error');
             } finally {
                 signupBtn.disabled = false;
                 signupBtn.innerHTML = 'Create Account →';
@@ -388,7 +383,7 @@
             const password = document.getElementById('loginPassword').value;
             
             if (!username || !password) {
-                showMessage(document.getElementById('loginMessage'), '❌ Enter username and password', 'error');
+                showMessage(document.getElementById('loginMessage'), '❌ Enter username/email and password', 'error');
                 return;
             }
             
@@ -397,22 +392,16 @@
             loginBtn.innerHTML = '<span class="loading-spinner"></span> Logging in...';
             
             try {
-                const students = await getAllStudents();
-                const user = students.find(s => s.username === username && s.password === password);
+                const result = await callApi('login', { username, password });
                 
-                if (user) {
-                    localStorage.setItem('currentUser', JSON.stringify({
-                        id: user.id || user._id,
-                        fullname: user.fullname,
-                        username: user.username,
-                        email: user.email
-                    }));
+                if (result.success && result.user) {
+                    localStorage.setItem('currentUser', JSON.stringify(result.user));
                     window.location.href = 'dashboard.html';
                 } else {
-                    showMessage(document.getElementById('loginMessage'), '❌ Invalid username or password', 'error');
+                    showMessage(document.getElementById('loginMessage'), '❌ ' + (result.message || 'Invalid credentials'), 'error');
                 }
             } catch (error) {
-                showMessage(document.getElementById('loginMessage'), '❌ Connection error', 'error');
+                showMessage(document.getElementById('loginMessage'), '❌ Connection error: ' + error.message, 'error');
             } finally {
                 loginBtn.disabled = false;
                 loginBtn.innerHTML = 'Login →';
