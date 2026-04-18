@@ -207,6 +207,9 @@
                     ? `<img src="${user.profilePicture}" class="profile-large-avatar" style="object-fit:cover;">`
                     : `<div class="profile-large-avatar">${escapeHtml(user.fullname.charAt(0).toUpperCase())}</div>`;
                 
+                // FIXED: Use 'aboutme' instead of 'bio' to match your sheet
+                const bioText = user.aboutme || user.bio || 'No bio added yet.';
+                
                 document.getElementById('profileContent').innerHTML = `
                     <div class="profile-cover">
                         ${avatarHtml}
@@ -224,7 +227,7 @@
                     </div>
                     <div class="section-card">
                         <div class="section-title">📝 About Me</div>
-                        <p>${escapeHtml(user.bio || 'No bio added yet.')}</p>
+                        <p>${escapeHtml(bioText)}</p>
                         <div style="margin-top:1rem;"><strong>📍 Location:</strong> ${escapeHtml(user.location || 'Not specified')}</div>
                         <div><strong>📅 Joined:</strong> ${escapeHtml(user.createdAt || 'Recently')}</div>
                     </div>
@@ -245,7 +248,10 @@
                         <div>${achievements.length ? achievements.map(a => `<span class="achievement-badge">🏅 ${escapeHtml(a)}</span>`).join('') : '<p>No achievements added yet.</p>'}</div>
                     </div>
                 `;
-            } catch(e) { console.error(e); }
+            } catch(e) { 
+                console.error(e);
+                document.getElementById('profileContent').innerHTML = '<div class="section-card"><h2>❌ Error loading profile</h2><p>Please try again later.</p></div>';
+            }
         }
         
         document.getElementById('logoutBtn').onclick = () => {
