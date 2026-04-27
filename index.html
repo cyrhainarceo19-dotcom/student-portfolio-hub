@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | Student Portfolio Hub</title>
@@ -291,181 +292,121 @@
     </div>
 
     <script>
-        // IMPORTANT: I-replace ito ng URL ng iyong Google Apps Script Web App URL
-        const SCRIPT_URL = "https://docs.google.com/spreadsheets/d/1BX1fKZtFusFhuY0lXM1YCHjajC2puoIp0PyKXAJYOns/edit?usp=sharing";
-        
-        async function callApi(action, data = {}) {
-    const payload = { action, ...data };
+       // 1. Script URL
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwZG541qMzIgKli04GWdjtwKBXc3Aej42qxC1oy8NuDiMtEIg7AoSDnnx9av2GasGKu/exec";
 
+// 2. UI Elements
+const modal = document.getElementById('termsModal');
+const openTerms = document.getElementById('openTerms');
+const closeModal = document.getElementById('closeModal');
+const acceptTerms = document.getElementById('acceptTerms');
+const checkbox = document.getElementById('termsCheckbox');
+
+// 3. Modal Functionality
+openTerms.onclick = (e) => { e.preventDefault(); modal.classList.add('show'); };
+closeModal.onclick = () => modal.classList.remove('show');
+acceptTerms.onclick = () => { checkbox.checked = true; modal.classList.remove('show'); };
+window.onclick = (e) => { if (e.target === modal) modal.classList.remove('show'); };
+
+// 4. API Core
+async function callApi(action, data = {}) {
+    const payload = { action, ...data };
     try {
         const response = await fetch(SCRIPT_URL, {
             method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify(payload)
         });
-
-        const text = await response.text();
-        console.log("RAW RESPONSE:", text);
-
-        if (!text) {
-            throw new Error("Empty response from server");
-        }
-
-        return JSON.parse(text);
-
+        return await response.json();
     } catch (error) {
-        console.error("API Error:", error);
+        console.error('Connection Error:', error);
         throw error;
     }
-} 
+}
 
-        function showMessage(element, text, type) {
-            element.textContent = text;
-            element.className = `message ${type}`;
-            element.style.display = 'block';
-            setTimeout(() => {
-                element.style.display = 'none';
-            }, 4000);
+// 5. Auth Handlers
+async function handleSignup() {
+    const fields = {
+        fullname: document.getElementById('signupFullname').value.trim(),
+        username: document.getElementById('signupUsername').value.trim(),
+        email: document.getElementById('signupEmail').value.trim(),
+        password: document.getElementById('signupPassword').value,
+        confirm: document.getElementById('signupConfirm').value
+    };
+    
+    if (Object.values(fields).some(v => !v)) return showMessage(document.getElementById('signupMessage'), '❌ Fill all fields', 'error');
+    if (fields.password !== fields.confirm) return showMessage(document.getElementById('signupMessage'), '❌ Passwords mismatch', 'error');
+    if (fields.password.length < 6) return showMessage(document.getElementById('signupMessage'), '❌ Min 6 characters', 'error');
+    if (!checkbox.checked) return showMessage(document.getElementById('signupMessage'), '❌ Accept Terms', 'error');
+    
+
+    const btn = document.getElementById('signupBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loading-spinner"></span> Creating...';
+
+    try {
+        const result = await callApi('signup', fields);
+        if (result.success) {
+            showMessage(document.getElementById('signupMessage'), '✅ Success! Redirecting...', 'success');
+            setTimeout(() => document.querySelector('[data-tab="login"]').click(), 1500);
+        } else {
+            showMessage(document.getElementById('signupMessage'), '❌ ' + result.message, 'error');
         }
-        
-        async function handleSignup() {
-            const fullname = document.getElementById('signupFullname').value.trim();
-            const username = document.getElementById('signupUsername').value.trim();
-            const email = document.getElementById('signupEmail').value.trim();
-            const password = document.getElementById('signupPassword').value;
-            const confirm = document.getElementById('signupConfirm').value;
-            const termsChecked = document.getElementById('termsCheckbox').checked;
-            
-            if (!fullname || !username || !email || !password) {
-                showMessage(document.getElementById('signupMessage'), '❌ Please fill all fields', 'error');
-                return;
-            }
-            if (password !== confirm) {
-                showMessage(document.getElementById('signupMessage'), '❌ Passwords do not match', 'error');
-                return;
-            }
-            if (password.length < 6) {
-                showMessage(document.getElementById('signupMessage'), '❌ Password must be at least 6 characters', 'error');
-                return;
-            }
-            if (!termsChecked) {
-                showMessage(document.getElementById('signupMessage'), '❌ You must agree to the Terms and Conditions', 'error');
-                return;
-            }
-            
-            const signupBtn = document.getElementById('signupBtn');
-            signupBtn.disabled = true;
-            signupBtn.innerHTML = '<span class="loading-spinner"></span> Creating...';
-            
-            try {
-                const result = await callApi('signup', { fullname, username, email, password });
-                
-                if (result.success) {
-                    showMessage(document.getElementById('signupMessage'), '✅ Account created! Please login.', 'success');
-                    setTimeout(() => {
-                        document.querySelector('[data-tab="login"]').click();
-                        document.getElementById('loginUsername').value = username;
-                    }, 1500);
-                } else {
-                    showMessage(document.getElementById('signupMessage'), '❌ ' + result.message, 'error');
-                }
-            } catch (error) {
-                showMessage(document.getElementById('signupMessage'), '❌ Connection error: ' + error.message, 'error');
-            } finally {
-                signupBtn.disabled = false;
-                signupBtn.innerHTML = 'Create Account →';
-            }
-        }
-        
-        async function handleLogin() {
+    } catch (e) {
+        showMessage(document.getElementById('signupMessage'), '❌ Server Error', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Create Account →';
+    }
+}
+
+async function handleLogin() {
     const username = document.getElementById('loginUsername').value.trim();
     const password = document.getElementById('loginPassword').value;
+    if (!username || !password) return showMessage(document.getElementById('loginMessage'), '❌ Fill all fields', 'error');
 
-    if (!username || !password) {
-        showMessage(document.getElementById('loginMessage'), '❌ Enter username/email and password', 'error');
-        return;
-    }
-
-    const loginBtn = document.getElementById('loginBtn');
-    loginBtn.disabled = true;
-    loginBtn.innerHTML = 'Logging in...';
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loading-spinner"></span>...';
 
     try {
         const result = await callApi('login', { username, password });
-
-        console.log("LOGIN RESULT:", result);
-
         if (result.success) {
-            // SAVE USER DATA
-            localStorage.setItem('currentUser', JSON.stringify({
-                username: username
-            }));
-
-            // REDIRECT TO MAIN PAGE
+            localStorage.setItem('currentUser', JSON.stringify(result.user));
             window.location.href = 'dashboard.html';
-
         } else {
-            showMessage(document.getElementById('loginMessage'), '❌ ' + result.message, 'error');
+            showMessage(document.getElementById('loginMessage'), '❌ Invalid credentials', 'error');
+            console.log("im heere")
         }
-
-    } catch (error) {
+    } catch (e) {
         showMessage(document.getElementById('loginMessage'), '❌ Connection error', 'error');
     } finally {
-        loginBtn.disabled = false;
-        loginBtn.innerHTML = 'Login →';
+        btn.disabled = false;
+        btn.innerHTML = 'Login →';
     }
 }
-        
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const tab = btn.dataset.tab;
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                document.getElementById('loginForm').classList.toggle('active', tab === 'login');
-                document.getElementById('signupForm').classList.toggle('active', tab === 'signup');
-                document.getElementById('loginMessage').style.display = 'none';
-                document.getElementById('signupMessage').style.display = 'none';
-            });
-        });
-        
-        document.getElementById('loginBtn').addEventListener('click', handleLogin);
-        document.getElementById('signupBtn').addEventListener('click', handleSignup);
-        
-        document.getElementById('loginPassword').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handleLogin();
-        });
-        document.getElementById('signupConfirm').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handleSignup();
-        });
-        
-        // Modal functionality
-        const modal = document.getElementById('termsModal');
-        const openTerms = document.getElementById('openTerms');
-        const closeModal = document.getElementById('closeModal');
-        const acceptTerms = document.getElementById('acceptTerms');
-        const checkbox = document.getElementById('termsCheckbox');
 
-        openTerms.addEventListener('click', (e) => {
-            e.preventDefault();
-            modal.classList.add('show');
-        });
+// 6. Event Listeners
+document.getElementById('loginBtn').onclick = handleLogin;
+document.getElementById('signupBtn').onclick = handleSignup;
+document.getElementById('loginPassword').onkeypress = (e) => { if(e.key === 'Enter') handleLogin(); };
 
-        closeModal.addEventListener('click', () => {
-            modal.classList.remove('show');
-        });
+function showMessage(el, txt, cls) {
+    el.textContent = txt;
+    el.className = `message ${cls}`;
+    el.style.display = 'block';
+}
 
-        acceptTerms.addEventListener('click', () => {
-            checkbox.checked = true;
-            modal.classList.remove('show');
-        });
-
-        window.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.classList.remove('show');
-            }
-        });
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.onclick = () => {
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('loginForm').classList.toggle('active', tab === 'login');
+        document.getElementById('signupForm').classList.toggle('active', tab === 'signup');
+    };
+});
     </script>
-
 </body>
-
-
 </html>
